@@ -2,13 +2,14 @@ package domain.member.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @Table(name="member")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,11 +17,6 @@ public class Member {
 
     @Column(unique = true, nullable = false)
     private String email;
-
-    // 역할 USER/ADMIN
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private MemberRoll role;
 
     @Column(nullable = false)
     private String address;
