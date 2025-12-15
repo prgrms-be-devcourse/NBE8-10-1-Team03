@@ -10,6 +10,16 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
+
+/**
+ * 상품 정보를 저장하는 엔티티입니다.
+ *
+ * <p>
+ * 이미지 정보는 직접 연관관계로 관리하지 않고,
+ * 이미지 ID를 통해 간접적으로 참조하는 방식으로 설계되었습니다.
+ * </p>
+ * @see ProductImage
+ */
 @Entity
 @Builder
 @Getter

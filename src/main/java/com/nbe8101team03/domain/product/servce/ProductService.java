@@ -78,11 +78,22 @@ public class ProductService {
         return product.getId();
     }
 
+
+    /**
+     * 상품을 삭제합니다.
+     *
+     * @param productId 상품 ID
+     */
     @Transactional
     public void delete(Long productId) {
         productRepository.deleteById(productId);
     }
 
+    /**
+     * 전체 상품 목록을 조회합니다.
+     *
+     * @return 상품 목록
+     */
     @Transactional(readOnly = true)
     public List<ProductInfoRes> getProducts() {
         List<Product> lists = productRepository.findAll();
@@ -90,6 +101,12 @@ public class ProductService {
         return lists.stream().map(this::toRes).toList();
     }
 
+    /**
+     * 상품 단건을 조회합니다.
+     *
+     * @param productId 상품 ID
+     * @return 상품 정보
+     */
     @Transactional(readOnly = true)
     public ProductInfoRes getProduct(Long productId) {
         Optional<Product> productOpt = productRepository.findById(productId);
@@ -98,12 +115,19 @@ public class ProductService {
         return toRes(productOpt.get());
     }
 
+    /**
+     * 상품 정보 유효성을 검증합니다.
+     */
     private void verifyInfo(ProductInfoDto dto) {
         if(dto.name() == null) throw new ProductException(ProductErrorCode.CREATE_FAIL, makeErrorMsg("이름"));
         if(dto.cost() == null || dto.cost() <= 0) throw new ProductException(ProductErrorCode.CREATE_FAIL, makeErrorMsg("가격"));
         if(dto.type() == null) throw new ProductException(ProductErrorCode.CREATE_FAIL, makeErrorMsg("타입"));
     }
 
+
+    /**
+     * DTO를 엔티티로 변환합니다.
+     */
     private Product toEntity(ProductInfoDto dto) {
         return Product.builder()
                 .name(dto.name())
@@ -114,6 +138,9 @@ public class ProductService {
                 .build();
     }
 
+    /**
+     * 엔티티를 응답 DTO로 변환한다.
+     */
     private ProductInfoRes toRes(Product product) {
         return ProductInfoRes.builder()
                 .id(product.getId())
