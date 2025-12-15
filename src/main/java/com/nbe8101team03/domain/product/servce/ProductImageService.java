@@ -40,6 +40,11 @@ public class ProductImageService {
         return productImageRepository.save(image).getId();
     }
 
+    @Transactional
+    public void deleteImage(Long id) {
+        productImageRepository.deleteById(id);
+    }
+
     @Transactional(readOnly = true)
     public byte[] loadImage(Long imageId) {
         ProductImage image = productImageRepository.findById(imageId)
