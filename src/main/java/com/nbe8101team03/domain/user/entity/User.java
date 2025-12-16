@@ -1,4 +1,4 @@
-package domain.user.entity;
+package com.nbe8101team03.domain.user.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name="user")
+@Table(name="USERS")
 @NoArgsConstructor
 public class User {
     @Id
