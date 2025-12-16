@@ -13,7 +13,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/product/images")
+@RequestMapping("/products/images")
 public class ProductImageController {
 
     private final ProductImageService productImageService;

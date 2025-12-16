@@ -34,6 +34,11 @@ public class ProductService {
     public Long createProduct(ProductInfoDto dto) {
         verifyInfo(dto);
 
+        if(!productImageRepository.existsById(dto.imageId())) {
+            throw new ProductException(ProductErrorCode.UNKNOWN_IMAGE,
+                    "[ProductService#createProduct] create fail, unknown image");
+        }
+
         Product product = toEntity(dto);
 
         try {
@@ -56,6 +61,7 @@ public class ProductService {
      */
     @Transactional
     public Long updateProduct(Long productId, ProductInfoDto dto) {
+        verifyInfo(dto);
         Optional<Product> productOpt = productRepository.findById(productId);
         if(productOpt.isEmpty()) throw new ProductException(ProductErrorCode.UNKNOWN_PRODUCT);
 
@@ -86,6 +92,12 @@ public class ProductService {
      */
     @Transactional
     public void delete(Long productId) {
+        Optional<Product> productOpt = productRepository.findById(productId);
+        if(productOpt.isEmpty()) throw new ProductException(ProductErrorCode.UNKNOWN_PRODUCT,
+                "[ProductService#delete] delete fail, unknown entity");
+        Product product = productOpt.get();
+        if(product.getImageId() != null) productImageRepository.deleteById(product.getImageId());
+
         productRepository.deleteById(productId);
     }
 
@@ -119,9 +131,18 @@ public class ProductService {
      * 상품 정보 유효성을 검증합니다.
      */
     private void verifyInfo(ProductInfoDto dto) {
-        if(dto.name() == null) throw new ProductException(ProductErrorCode.CREATE_FAIL, makeErrorMsg("이름"));
-        if(dto.cost() == null || dto.cost() <= 0) throw new ProductException(ProductErrorCode.CREATE_FAIL, makeErrorMsg("가격"));
-        if(dto.type() == null) throw new ProductException(ProductErrorCode.CREATE_FAIL, makeErrorMsg("타입"));
+        if(dto.name() == null) {
+            throw new ProductException(ProductErrorCode.CREATE_FAIL,
+                    "[ProductService#verifyInfo] [name]", makeErrorMsg("이름"));
+        }
+        if(dto.cost() == null || dto.cost() <= 0) {
+            throw new ProductException(ProductErrorCode.CREATE_FAIL,
+                    "[ProductService#verifyInfo] [cost]", makeErrorMsg("가격"));
+        }
+        if(dto.type() == null) {
+            throw new ProductException(ProductErrorCode.CREATE_FAIL,
+                    "[ProductService#verifyInfo] [type]", makeErrorMsg("타입"));
+        }
     }
 
 
@@ -155,4 +176,5 @@ public class ProductService {
     private String makeErrorMsg(String str) {
         return "[" + str + "] 형식이 잘못되었습니다.";
     }
+
 }
