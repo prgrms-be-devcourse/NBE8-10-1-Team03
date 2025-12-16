@@ -17,16 +17,6 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
-//    POST/users : 유저 생성
-//    GET/users : 유저 전체 조회
-//    GET/users /{userId} : 유저 단건 조회
-//    PUT/users /{userId} : 유저 수정
-//    DELETE/users/{userId} : 유저 삭제
-
-//    private int user_id;
-//    private String email;
-//    private String address;
-//    private int zipcode;
 
     @PostMapping
     public CommonResponse<UserInfoRes> create(@RequestBody UserInfoDto dto) {
@@ -76,6 +66,7 @@ public class UserController {
        return  CommonResponse.success(new UserInfoRes(user), "유저 수정 성공");
     }
 
+    // 유저 삭제
     @DeleteMapping("/{userId}")
     public CommonResponse<UserInfoRes> delete(@PathVariable int id) {
         User user = userService.findById(id).get();

@@ -17,7 +17,6 @@ public class User {
     private int user_id;
     @Column(unique = true, nullable = false)
     private String email;
-
     @Column(nullable = false)
     private String address;
 
