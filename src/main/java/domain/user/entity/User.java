@@ -1,20 +1,17 @@
-package domain.member.entity;
+package domain.user.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name="member")
+@Table(name="user")
 @NoArgsConstructor
-public class Member {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int memberId;
-
+    private int user_id;
     @Column(unique = true, nullable = false)
     private String email;
 
