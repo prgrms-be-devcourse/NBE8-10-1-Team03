@@ -41,6 +41,13 @@ public class AdminController {
         return CommonResponse.success(res, "어드민 단건 조회 성공");
     }
 
+    //    어드민 소프트 삭제
+    @PatchMapping("/{adminId}/deactivate")
+    public CommonResponse<Void> deactivate(@PathVariable Long adminId) {
+        adminService.deactivate(adminId);
+        return CommonResponse.success(null, "어드민 비활성화 성공");
+    }
+
     //    주문 리스트
 //    @GetMapping("/list")
 

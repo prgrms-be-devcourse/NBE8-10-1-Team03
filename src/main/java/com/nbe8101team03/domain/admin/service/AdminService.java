@@ -26,7 +26,7 @@ public class AdminService {
     public AdminResponse create(AdminRequest adminRequest) {
         if (adminRepository.existsByUserId(adminRequest.userId())) {
             throw new AdminException(AdminErrorCode.ADMIN_UNDEFINED_ERROR,
-                    "adminCreate Error", "undefined error");
+                    "adminCreate Error", "userId is exist");
         }
 
         Admin admin = Admin.builder()
@@ -57,10 +57,23 @@ public class AdminService {
                 .orElseThrow(() -> new AdminException(
                         AdminErrorCode.ADMIN_UNDEFINED_ERROR,
                         "adminDetail Error",
-                        "undefined error"
+                        "admin is not exist"
                 ));
 
         return new AdminResponse(admin.getId(), admin.getUserId(), isActive(admin));
+    }
+
+//    어드민 소프트 삭제
+    @Transactional
+    public void deactivate(Long adminId) {
+        Admin admin = adminRepository.findById(adminId)
+                .orElseThrow(() -> new AdminException(
+                        AdminErrorCode.ADMIN_UNDEFINED_ERROR,
+                        "adminDeactivate Error",
+                        "admin is not exist"
+                ));
+
+        admin.deactivate();
     }
 
     private boolean isActive(Admin admin) {
