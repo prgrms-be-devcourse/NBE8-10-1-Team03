@@ -5,13 +5,13 @@ import javax.crypto.spec.PBEKeySpec;
 import java.security.SecureRandom;
 import java.util.Base64;
 
-public final class SimplePasswordEncoder {
+public final class PasswordEncoder {
     private static final int SALT_BYTES = 16;
     private static final int ITERATIONS = 10000;
     private static final int KEY_LENGTH = 256; // bits
     private static final String ALGO = "PBKDF2WithHmacSHA256";
 
-    private SimplePasswordEncoder() {}
+    private PasswordEncoder() {}
 
     public static String encode(String rawPassword) {
         try {
