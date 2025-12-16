@@ -25,8 +25,10 @@ public class AdminService {
     @Transactional
     public AdminResponse create(AdminRequest adminRequest) {
         if (adminRepository.existsByUserId(adminRequest.userId())) {
-            throw new AdminException(AdminErrorCode.ADMIN_UNDEFINED_ERROR,
-                    "adminCreate Error", "userId is exist");
+            throw new AdminException(
+                    AdminErrorCode.ADMIN_ALREADY_EXISTS,
+                    "adminCreate Error",
+                    "userId already exist");
         }
 
         Admin admin = Admin.builder()
@@ -55,9 +57,9 @@ public class AdminService {
     public AdminResponse detail(Long adminId) {
         Admin admin = adminRepository.findById(adminId)
                 .orElseThrow(() -> new AdminException(
-                        AdminErrorCode.ADMIN_UNDEFINED_ERROR,
+                        AdminErrorCode.ADMIN_NOT_FOUND,
                         "adminDetail Error",
-                        "admin is not exist"
+                        "admin not found"
                 ));
 
         return new AdminResponse(admin.getId(), admin.getUserId(), isActive(admin));
@@ -68,11 +70,18 @@ public class AdminService {
     public void deactivate(Long adminId) {
         Admin admin = adminRepository.findById(adminId)
                 .orElseThrow(() -> new AdminException(
-                        AdminErrorCode.ADMIN_UNDEFINED_ERROR,
+                        AdminErrorCode.ADMIN_NOT_FOUND,
                         "adminDeactivate Error",
-                        "admin is not exist"
+                        "admin not found"
                 ));
 
+        if (!isActive(admin)) {
+            throw new AdminException(
+                    AdminErrorCode.ADMIN_ALREADY_DEACTIVATED,
+                    "adminDeactivate Error",
+                    "admin already deactivated"
+            );
+        }
         admin.deactivate();
     }
 
