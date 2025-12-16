@@ -23,14 +23,16 @@ public class ProductImageService {
     @Transactional
     public Long saveImage(MultipartFile file) {
         if (file == null || file.isEmpty()) {
-            throw new IllegalArgumentException("이미지 파일이 비어있음");
+            throw new ProductException(ProductErrorCode.UNKNOWN_IMAGE,
+                    "[ProductImageService#saveImage] no input image", "입력된 이미지가 없습니다.");
         }
 
         byte[] bytes;
         try {
             bytes = file.getBytes();
         } catch (IOException e) {
-            throw new RuntimeException("이미지 읽기 실패", e);
+            throw new ProductException(ProductErrorCode.UNKNOWN_IMAGE,
+                    "[ProductImageService#saveImage] decoding fail", "이미지 형식이 올바르지 않습니다.");
         }
 
         ProductImage image = ProductImage.builder()
