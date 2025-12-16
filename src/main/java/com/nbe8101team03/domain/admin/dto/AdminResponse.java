@@ -2,5 +2,6 @@ package com.nbe8101team03.domain.admin.dto;
 
 public record AdminResponse (
         Long id,
-        String userId
+        String userId,
+        boolean active
 ) {}

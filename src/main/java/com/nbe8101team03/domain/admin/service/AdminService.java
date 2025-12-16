@@ -1,6 +1,6 @@
 package com.nbe8101team03.domain.admin.service;
 
-import com.nbe8101team03.domain.admin.dto.AdminCreateRequest;
+import com.nbe8101team03.domain.admin.dto.AdminRequest;
 import com.nbe8101team03.domain.admin.dto.AdminResponse;
 import com.nbe8101team03.domain.admin.entity.Admin;
 import com.nbe8101team03.domain.admin.repository.AdminRepository;
@@ -20,15 +20,15 @@ public class AdminService {
     }
 
     @Transactional
-    public AdminResponse adminCreate(AdminCreateRequest adminCreateRequest){
-        if(adminRepository.existsByUserId(adminCreateRequest.userId())){
+    public AdminResponse adminCreate(AdminRequest adminRequest){
+        if(adminRepository.existsByUserId(adminRequest.userId())){
             throw new AdminException(AdminErrorCode.ADMIN_UNDEFINED_ERROR,
                     "adminCreate Error", "server error");
         }
 
         Admin admin = Admin.builder()
-                .userId(adminCreateRequest.userId())
-                .password(SimplePasswordEncoder.encode(adminCreateRequest.password()))
+                .userId(adminRequest.userId())
+                .password(SimplePasswordEncoder.encode(adminRequest.password()))
                 .build();
 
         Admin saved = adminRepository.save(admin);

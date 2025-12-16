@@ -1,6 +1,6 @@
 package com.nbe8101team03.domain.admin.controller;
 
-import com.nbe8101team03.domain.admin.dto.AdminCreateRequest;
+import com.nbe8101team03.domain.admin.dto.AdminRequest;
 import com.nbe8101team03.domain.admin.service.AdminService;
 import com.nbe8101team03.global.response.CommonResponse;
 import jakarta.validation.Valid;
@@ -17,7 +17,7 @@ public class AdminController {
 
     //    어드민 생성
     @PostMapping
-    public CommonResponse<Long> create(@RequestBody @Valid AdminCreateRequest request) {
+    public CommonResponse<Long> create(@RequestBody @Valid AdminRequest request) {
         Long id = adminService.adminCreate(request).id();
         return CommonResponse.success(id, "어드민 생성 성공");
     }
