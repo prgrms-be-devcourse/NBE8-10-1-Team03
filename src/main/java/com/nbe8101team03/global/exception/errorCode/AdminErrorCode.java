@@ -5,8 +5,26 @@ import org.springframework.http.HttpStatus;
 
 @RequiredArgsConstructor
 public enum AdminErrorCode implements ErrorCode{
-    //아직 정의 안 됨 리팩토링 필요
-    ADMIN_UNDEFINED_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "ADMIN_UNDEFINED_ERROR");
+    // 정의 안된 undefiend error
+    ADMIN_UNDEFINED_ERROR(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            "ADMIN_UNDEFINED_ERROR"
+    ),
+    // 생성
+    ADMIN_ALREADY_EXISTS(
+            HttpStatus.CONFLICT,
+            "ADMIN_ALREADY_EXISTS"
+    ),
+    // 조회
+    ADMIN_NOT_FOUND(
+            HttpStatus.NOT_FOUND,
+            "ADMIN_NOT_FOUND"
+    ),
+    // 소프트 삭제 admin deactive
+    ADMIN_ALREADY_DEACTIVATED(
+            HttpStatus.BAD_REQUEST,
+            "ADMIN_ALREADY_DEACTIVATED"
+    );
 
     private final HttpStatus status;
     private final String message;
