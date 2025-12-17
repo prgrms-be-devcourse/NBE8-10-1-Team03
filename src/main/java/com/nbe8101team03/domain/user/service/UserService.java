@@ -1,22 +1,21 @@
 package com.nbe8101team03.domain.user.service;
 
+import com.nbe8101team03.domain.orders.repository.OrderRepository;
 import com.nbe8101team03.domain.user.entity.User;
 import com.nbe8101team03.domain.user.repository.UserRepository;
 import com.nbe8101team03.global.exception.errorCode.UserErrorCode;
 import com.nbe8101team03.global.exception.exception.UserException;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    private final OrderRepository orderRepository;
 
     @Transactional
     public User createUser(String email, String address, int zipcode){
@@ -63,6 +62,10 @@ public class UserService {
 
     @Transactional
     public void delete(User user){
+        // 주문 중인 유저인지 확인 => 주문 중이라면 삭제되지 않도록.
+        if(orderRepository.existsByUser(user)) {
+            throw new UserException(UserErrorCode.NOT_DELETE_USER);
+        }
         userRepository.delete(user);
     }
 }
