@@ -25,12 +25,6 @@ public class CommonResponse<T> implements Response<T> {
         this.message = message;
     }
 
-    protected CommonResponse(String code, String status, T data, String message) {
-        this.status = status;
-        this.data = data;
-        this.message = message;
-    }
-
     public static <T> CommonResponse<T> success(T data, String message) {
         return new CommonResponse<>("success", data, message);
     }
@@ -43,11 +37,11 @@ public class CommonResponse<T> implements Response<T> {
         return new CommonResponse<>("success", null, "success to response");
     }
 
-    public static <T> CommonResponse<T> fail(String message) {
+    public static CommonResponse<Void> fail(String message) {
         return new CommonResponse<>("fail", null, message);
     }
 
-    public static <T> CommonResponse<T> fail() {
+    public static CommonResponse<Void> fail() {
         return new CommonResponse<>("fail", null, "fail to response");
     }
 }

@@ -1,5 +1,6 @@
 package com.nbe8101team03.domain.product.servce;
 
+import com.nbe8101team03.domain.product.dto.ProductDetailInfoRes;
 import com.nbe8101team03.domain.product.dto.ProductInfoDto;
 import com.nbe8101team03.domain.product.dto.ProductInfoRes;
 import com.nbe8101team03.domain.product.entity.Product;
@@ -114,6 +115,18 @@ public class ProductService {
     }
 
     /**
+     * 전체 상품 목록을 조회합니다. 어드민 전용 detail 정보입니다.
+     *
+     * @return 상품 목록
+     */
+    @Transactional(readOnly = true)
+    public List<ProductDetailInfoRes> getProductsDetail() {
+        List<Product> lists = productRepository.findAll();
+
+        return lists.stream().map(this::toDetailRes).toList();
+    }
+
+    /**
      * 상품 단건을 조회합니다.
      *
      * @param productId 상품 ID
@@ -170,6 +183,20 @@ public class ProductService {
                 .cost(product.getCost())
                 .description(product.getDescription())
                 .imageId(product.getImageId())
+                .build();
+    }
+
+    private ProductDetailInfoRes toDetailRes(Product product) {
+        return ProductDetailInfoRes.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .type(product.getType())
+                .cost(product.getCost())
+                .description(product.getDescription())
+                .imageId(product.getImageId())
+                .createdAt(product.getCreatedAt())
+                .updatedAt(product.getUpdatedAt())
+                .adminId(product.getAdmin().getId())
                 .build();
     }
 
