@@ -2,6 +2,7 @@ package com.nbe8101team03.domain.admin.service;
 
 import com.nbe8101team03.domain.admin.dto.AdminRequest;
 import com.nbe8101team03.domain.admin.dto.AdminResponse;
+import com.nbe8101team03.domain.admin.dto.AdminUpdateRequest;
 import com.nbe8101team03.domain.admin.entity.Admin;
 import com.nbe8101team03.domain.admin.repository.AdminRepository;
 import com.nbe8101team03.global.exception.errorCode.AdminErrorCode;
@@ -68,7 +69,7 @@ public class AdminService {
         return new AdminResponse(admin.getId(), admin.getUserId(), isActive(admin));
     }
 
-//    어드민 소프트 삭제
+    //    어드민 소프트 삭제
     @Transactional
     public void deactivate(Long adminId) {
         Admin admin = adminRepository.findById(adminId)
@@ -106,6 +107,37 @@ public class AdminService {
             );
         }
         admin.activate();
+    }
+
+    public AdminResponse update(Long adminId, AdminUpdateRequest request) {
+        Admin admin = adminRepository.findById(adminId)
+                .orElseThrow(() -> new AdminException(
+                        AdminErrorCode.ADMIN_NOT_FOUND,
+                        "adminUpdate Error",
+                        "admin not found"
+                ));
+
+        // userId 변경
+        if (request.userId() != null && !request.userId().isBlank()
+                && !request.userId().equals(admin.getUserId())) {
+
+            if (adminRepository.existsByUserId(request.userId())) {
+                throw new AdminException(
+                        AdminErrorCode.ADMIN_ALREADY_EXISTS,
+                        "adminUpdate Error",
+                        "admin already exist"
+                );
+            }
+
+            admin.changeUserId(request.userId());
+        }
+
+        // password 변경
+        if (request.password() != null && !request.password().isBlank()) {
+            admin.changePasswordHash(PasswordEncoder.encode(request.password()));
+        }
+
+        return new AdminResponse(admin.getId(), admin.getUserId(), admin.isActive());
     }
 
     private boolean isActive(Admin admin) {

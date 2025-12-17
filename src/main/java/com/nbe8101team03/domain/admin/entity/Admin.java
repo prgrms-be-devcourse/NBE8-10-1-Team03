@@ -37,12 +37,12 @@ public class Admin {
     public void activate() {
         this.active = true;
     }
-    // todo 아이디나 비밀번호 변경에 필요
-//    public void setUserId(String userId) {
-//        this.userId = userId;
-//    }
-//
-//    public void setPassword(String password) {
-//        this.password = password;
-//    }
+
+    public void changeUserId(String userId){
+        this.userId = userId;
+    }
+
+    public void changePasswordHash(String passwordHash){
+        this.passwordHash = passwordHash;
+    }
 }

@@ -2,6 +2,7 @@ package com.nbe8101team03.domain.admin.controller;
 
 import com.nbe8101team03.domain.admin.dto.AdminRequest;
 import com.nbe8101team03.domain.admin.dto.AdminResponse;
+import com.nbe8101team03.domain.admin.dto.AdminUpdateRequest;
 import com.nbe8101team03.domain.admin.service.AdminService;
 import com.nbe8101team03.global.response.CommonResponse;
 import com.nbe8101team03.global.response.Response;
@@ -57,6 +58,15 @@ public class AdminController {
         return ResponseEntity.ok(CommonResponse.success(null, "어드민 활성화 성공"));
     }
 
+    // admin userId or password 변경
+    @PutMapping("/{adminId}")
+    public ResponseEntity<CommonResponse<AdminResponse>> update(
+            @PathVariable Long adminId,
+            @RequestParam @Valid AdminUpdateRequest request
+    ) {
+        AdminResponse res = adminService.update(adminId, request);
+        return ResponseEntity.ok(CommonResponse.success(res, "어드민 수정 성공"));
+    }
     //    주문 리스트
 //    @GetMapping("/list")
 
