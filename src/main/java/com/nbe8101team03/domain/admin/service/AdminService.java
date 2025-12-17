@@ -1,5 +1,6 @@
 package com.nbe8101team03.domain.admin.service;
 
+import com.nbe8101team03.domain.admin.dto.AdminPasswordChangeRequest;
 import com.nbe8101team03.domain.admin.dto.AdminRequest;
 import com.nbe8101team03.domain.admin.dto.AdminResponse;
 import com.nbe8101team03.domain.admin.dto.AdminUpdateRequest;
@@ -109,6 +110,8 @@ public class AdminService {
         admin.activate();
     }
 
+//    어드민 userId 수정
+    @Transactional
     public AdminResponse update(Long adminId, AdminUpdateRequest request) {
         Admin admin = adminRepository.findById(adminId)
                 .orElseThrow(() -> new AdminException(
@@ -117,7 +120,6 @@ public class AdminService {
                         "admin not found"
                 ));
 
-        // userId 변경
         if (request.userId() != null && !request.userId().isBlank()
                 && !request.userId().equals(admin.getUserId())) {
 
@@ -132,14 +134,38 @@ public class AdminService {
             admin.changeUserId(request.userId());
         }
 
-        // password 변경
-        if (request.password() != null && !request.password().isBlank()) {
-            admin.changePasswordHash(PasswordEncoder.encode(request.password()));
-        }
-
         return new AdminResponse(admin.getId(), admin.getUserId(), admin.isActive());
     }
 
+    @Transactional
+    public void changePassword(Long adminId, AdminPasswordChangeRequest request){
+        Admin admin = adminRepository.findById(adminId)
+                .orElseThrow(() -> new AdminException(
+                        AdminErrorCode.ADMIN_NOT_FOUND,
+                        "adminChangePassword Error",
+                        "admin not found"
+                ));
+
+        // 현재 비밀번호 검증
+        if(!PasswordEncoder.matches(request.currentPassword(), admin.getPasswordHash())){
+            throw new AdminException(
+                    AdminErrorCode.ADMIN_PASSWORD_MISMATCH,
+                    "adminChangePassword Error",
+                    "current password mismatch"
+            );
+        }
+
+        // 새 비밀번호와 기존 비밀번호가 동일한 것을 방지
+        if(PasswordEncoder.matches(request.newPassword(), admin.getPasswordHash())){
+            throw new AdminException(
+                    AdminErrorCode.ADMIN_PASSWORD_SAME_AS_OLD,
+                    "adminChangePassword Error",
+                    "new password same as old password"
+            );
+        }
+
+        admin.changePasswordHash(PasswordEncoder.encode(request.newPassword()));
+    }
     private boolean isActive(Admin admin) {
         return admin.isActive();
     }

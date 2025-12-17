@@ -1,5 +1,6 @@
 package com.nbe8101team03.domain.admin.controller;
 
+import com.nbe8101team03.domain.admin.dto.AdminPasswordChangeRequest;
 import com.nbe8101team03.domain.admin.dto.AdminRequest;
 import com.nbe8101team03.domain.admin.dto.AdminResponse;
 import com.nbe8101team03.domain.admin.dto.AdminUpdateRequest;
@@ -58,20 +59,27 @@ public class AdminController {
         return ResponseEntity.ok(CommonResponse.success(null, "어드민 활성화 성공"));
     }
 
-    // admin userId or password 변경
+    // 어드민 userId 수정 (일반 정보 수정)
     @PutMapping("/{adminId}")
     public ResponseEntity<CommonResponse<AdminResponse>> update(
             @PathVariable Long adminId,
             @RequestParam @Valid AdminUpdateRequest request
     ) {
         AdminResponse res = adminService.update(adminId, request);
-        return ResponseEntity.ok(CommonResponse.success(res, "어드민 수정 성공"));
+        return ResponseEntity.ok(CommonResponse.success(res, "어드민 정보 수정 성공"));
+    }
+
+    // 어드민 비밀번호 변경
+    @PatchMapping("/{adminId}/password")
+    public ResponseEntity<CommonResponse<Void>> changePassword(
+            @PathVariable Long adminId,
+            @RequestBody @Valid AdminPasswordChangeRequest request
+    ) {
+        adminService.changePassword(adminId, request);
+        return ResponseEntity.ok(CommonResponse.success(null, "어드민 비밀번호 변경 성공"));
     }
     //    주문 리스트
 //    @GetMapping("/list")
-
-    //    어드민 수정
-//    @PutMapping("/{id}")
 
     //    userId기반 주문 리스트 확인
 //    @GetMapping("/list/{userId}")

@@ -25,10 +25,21 @@ public enum AdminErrorCode implements ErrorCode{
             HttpStatus.BAD_REQUEST,
             "ADMIN_ALREADY_DEACTIVATED"
     ),
+    // 소프트 복구
     ADMIN_ALREADY_ACTIVATED(
             HttpStatus.BAD_REQUEST,
             "ADMIN_ALREADY_ACTIVATED"
-    );
+    ),
+    // 비밀번호 변경
+    ADMIN_PASSWORD_MISMATCH(
+            HttpStatus.BAD_REQUEST,
+            "ADMIN_PASSWORD_MISMATCH"
+    ),
+    ADMIN_PASSWORD_SAME_AS_OLD(
+            HttpStatus.BAD_REQUEST,
+            "ADMIN_PASSWORD_SAME_AS_OLD"
+    )
+    ;
 
     private final HttpStatus status;
     private final String message;
