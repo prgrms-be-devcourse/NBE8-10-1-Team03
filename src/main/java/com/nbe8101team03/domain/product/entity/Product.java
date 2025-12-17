@@ -1,6 +1,7 @@
 package com.nbe8101team03.domain.product.entity;
 
 
+import com.nbe8101team03.domain.admin.entity.Admin;
 import com.nbe8101team03.domain.product.dto.ProductInfoDto;
 import jakarta.persistence.*;
 import lombok.*;
@@ -47,6 +48,10 @@ public class Product {
 
     @Column(name = "image_id")
     private Long imageId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "creator")
+    private Admin admin;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
