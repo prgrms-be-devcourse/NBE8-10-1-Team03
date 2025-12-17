@@ -1,6 +1,7 @@
 package com.nbe8101team03.domain.orders.service;
 
 import com.nbe8101team03.domain.orders.dto.OrderResponse;
+import com.nbe8101team03.domain.orders.dto.UserOrdersResponse;
 import com.nbe8101team03.domain.orders.entity.Order;
 import com.nbe8101team03.domain.orders.entity.OrderStatus;
 import com.nbe8101team03.domain.orders.repository.OrderRepository;
@@ -8,6 +9,10 @@ import com.nbe8101team03.domain.product.entity.Product;
 import com.nbe8101team03.domain.product.repository.ProductRepository;
 import com.nbe8101team03.domain.user.entity.User;
 import com.nbe8101team03.domain.user.repository.UserRepository;
+import com.nbe8101team03.global.exception.errorCode.OrderErrorCode;
+import com.nbe8101team03.global.exception.errorCode.ProductErrorCode;
+import com.nbe8101team03.global.exception.exception.OrderException;
+import com.nbe8101team03.global.exception.exception.ProductException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,11 +41,26 @@ public class OrderService {
                     newUser.setZipcode(zipcode);
                     return userRepository.save(newUser);
                 });
-
+//        추후  User merge 되면 변경할예정
+//        User newUser = User.builder()
+//                .email(email)
+//                .address(address)
+//                .zipcode(zipcode)
+//                .build();
+        
+//        입력값 검증
+        if (quantity <= 0) {
+            throw new OrderException(OrderErrorCode.INVALID_QUANTITY);
+        }
 
 //        상품 조회
-        Product product = productRepository.findById(productId).orElseThrow(() -> new IllegalArgumentException("상품이 존재하지 않습니다. productId=" + productId));
-
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() ->
+                        new ProductException(
+                                ProductErrorCode.UNKNOWN_PRODUCT,
+                                "상품이 존재하지 않습니다. productId=" + productId
+                        )
+                );
 //        주문가격 계산
         int totalPrice = product.getCost() * quantity;
 
@@ -55,6 +75,7 @@ public class OrderService {
                 .build();
 
 
+
         Order saveorder = orderRepository.save(order);
         return OrderResponse.from(saveorder);
     }
@@ -64,22 +85,29 @@ public class OrderService {
     @Transactional(readOnly = true)
     public OrderResponse getOrder(Long orderId) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow();
+                .orElseThrow(() ->
+                        new OrderException(OrderErrorCode.UNKNOWN_ORDER));
 
         return OrderResponse.from(order);
     }
 
 //    유저별 주문 조회
     @Transactional(readOnly = true)
-    public List<OrderResponse> getOrdersByEmail(String email) {
+    public UserOrdersResponse getOrdersByEmail(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("유저 없음"));
+                .orElseThrow(() -> new OrderException(OrderErrorCode.UNKNOWN_USER));
 
-        List<Order> orders = orderRepository.findAllByUserOrderByOrderDateDesc(user);
-
-        return orders.stream()
+        List<OrderResponse> orders = orderRepository.findAllByUserOrderByOrderDateDesc(user)
+                .stream()
                 .map(OrderResponse::from)
                 .toList();
+
+        return new UserOrdersResponse(
+                user.getEmail(),
+                user.getAddress(),
+                user.getZipcode(),
+                orders
+        );
 
     }
 
@@ -95,7 +123,12 @@ public class OrderService {
 
     //    주문 삭제
     public void deleteOrder(Long orderId){
-        Order order = orderRepository.findById(orderId).orElseThrow();
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new OrderException(OrderErrorCode.UNKNOWN_ORDER));
+
+        if (order.getStatus() == OrderStatus.CANCELED) {
+            throw new OrderException(OrderErrorCode.ALREADY_CANCELED);
+        }
+
         User user = order.getUser();
 
         orderRepository.delete(order);
@@ -103,6 +136,8 @@ public class OrderService {
         if (!orderRepository.existsByUser(user)) {
             userRepository.delete(user);
         }
+
+
 
     }
 }
