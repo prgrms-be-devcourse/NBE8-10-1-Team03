@@ -18,9 +18,10 @@ public class Admin {
     @Column(name = "user_id", length = 10, nullable = false, unique = true)
     private String userId;
 
-    @Column(name = "passwordHash", length = 255, nullable = false)
+    @Column(name = "password_hash", length = 255, nullable = false)
     private String passwordHash;
 
+    @Column(name = "active", nullable = false)
     private boolean active = true;
 
     @Builder
