@@ -6,7 +6,6 @@ import com.nbe8101team03.domain.admin.dto.AdminResponse;
 import com.nbe8101team03.domain.admin.dto.AdminUpdateRequest;
 import com.nbe8101team03.domain.admin.service.AdminService;
 import com.nbe8101team03.global.response.CommonResponse;
-import com.nbe8101team03.global.response.Response;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -63,7 +62,7 @@ public class AdminController {
     @PutMapping("/{adminId}")
     public ResponseEntity<CommonResponse<AdminResponse>> update(
             @PathVariable Long adminId,
-            @RequestParam @Valid AdminUpdateRequest request
+            @RequestBody @Valid AdminUpdateRequest request
     ) {
         AdminResponse res = adminService.update(adminId, request);
         return ResponseEntity.ok(CommonResponse.success(res, "어드민 정보 수정 성공"));
