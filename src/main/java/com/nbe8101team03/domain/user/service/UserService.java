@@ -40,7 +40,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public User findById(int id) {
+    public User findById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(
                         () -> new UserException(UserErrorCode.USER_NOT_FOUND,

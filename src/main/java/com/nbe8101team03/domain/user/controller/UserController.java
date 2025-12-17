@@ -44,7 +44,7 @@ public class UserController {
 
     // 아이디로 찾기
     @GetMapping("/{userid}")
-    public ResponseEntity<Response<UserInfoRes>> getUserbyId(@PathVariable int userid){
+    public ResponseEntity<Response<UserInfoRes>> getUserbyId(@PathVariable Long userid){
         User user = userService.findById(userid);
 
         return  ResponseEntity.ok(CommonResponse.success(new UserInfoRes(user), "유저 아이디 조회 성공"));
@@ -60,7 +60,7 @@ public class UserController {
 
     // 유저 수정
     @PutMapping("/{userId}")
-    public ResponseEntity<Response<UserInfoRes>> modify( @PathVariable int userId,
+    public ResponseEntity<Response<UserInfoRes>> modify( @PathVariable Long userId,
                                         @RequestBody UserInfoDto dto
     ) {
         User user = userService.findById(userId);
@@ -71,7 +71,7 @@ public class UserController {
 
     // 유저 삭제
     @DeleteMapping("/{userId}")
-    public ResponseEntity<Response<UserInfoRes>> delete(@PathVariable int userId) {
+    public ResponseEntity<Response<UserInfoRes>> delete(@PathVariable Long userId) {
         User user = userService.findById(userId);
 
         userService.delete(user);
