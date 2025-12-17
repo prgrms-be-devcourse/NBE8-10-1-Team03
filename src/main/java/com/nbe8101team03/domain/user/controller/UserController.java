@@ -5,7 +5,9 @@ import com.nbe8101team03.domain.user.dto.UserInfoRes;
 import com.nbe8101team03.domain.user.entity.User;
 import com.nbe8101team03.domain.user.service.UserService;
 import com.nbe8101team03.global.response.CommonResponse;
+import com.nbe8101team03.global.response.Response;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,60 +21,61 @@ public class UserController {
 
 
     @PostMapping
-    public CommonResponse<UserInfoRes> create(@RequestBody UserInfoDto dto) {
+    public ResponseEntity<Response<UserInfoRes>> create(@RequestBody UserInfoDto dto) {
         User user = userService.createUser(
                 dto.email(),
                 dto.address(),
                 dto.zipcode()
         );
-        return CommonResponse.success(new UserInfoRes(user), "유저 생성 성공");
+        return ResponseEntity.ok(CommonResponse.success(new UserInfoRes(user), "유저 생성을 성공하였습니다."));
+
     }
 
     @GetMapping
-    public CommonResponse<List<UserInfoRes>> getUsers(){
+    public ResponseEntity<Response<List<UserInfoRes>>> getUsers(){
         List<User> userList = userService.findAll();
 
         List<UserInfoRes> userDtoList = userList.stream()
                                     .map(UserInfoRes::new)
                                     .toList();
 
-        return CommonResponse.success(userDtoList, "유저 조회 성공");
+        return ResponseEntity.ok(CommonResponse.success(userDtoList, "유저 조회 성공"));
     }
 
     // 아이디로 찾기
     @GetMapping("/{userid}")
-    public CommonResponse<UserInfoRes> getUserbyId(@PathVariable int userid){
-        User user = userService.findById(userid).get();
+    public ResponseEntity<Response<UserInfoRes>> getUserbyId(@PathVariable int userid){
+        User user = userService.findById(userid);
 
-        return  CommonResponse.success(new UserInfoRes(user), "유저 아이디 조회 성공");
+        return  ResponseEntity.ok(CommonResponse.success(new UserInfoRes(user), "유저 아이디 조회 성공"));
     }
 
     // 이메일로 찾기
-    @GetMapping("/{email}")
-    public CommonResponse<UserInfoRes> getUserbyEmail(@PathVariable String email){
-        User user = userService.findByEmail(email).get();
+    @GetMapping("/email/{email}")
+    public ResponseEntity<Response<UserInfoRes>> getUserbyEmail(@PathVariable String email){
+        User user = userService.findByEmail(email);
 
-        return  CommonResponse.success(new UserInfoRes(user), "유저 이메일 조회 성공");
+        return  ResponseEntity.ok(CommonResponse.success(new UserInfoRes(user), "유저 이메일 조회 성공"));
     }
 
     // 유저 수정
     @PutMapping("/{userId}")
-    public CommonResponse<UserInfoRes> modify( @PathVariable int id,
+    public ResponseEntity<Response<UserInfoRes>> modify( @PathVariable int userId,
                                         @RequestBody UserInfoDto dto
     ) {
-        User user = userService.findById(id).get();
+        User user = userService.findById(userId);
         userService.modify(user, dto.email(),dto.address(),dto.zipcode());
 
-       return  CommonResponse.success(new UserInfoRes(user), "유저 수정 성공");
+       return  ResponseEntity.ok(CommonResponse.success(new UserInfoRes(user), "유저 수정 성공"));
     }
 
     // 유저 삭제
     @DeleteMapping("/{userId}")
-    public CommonResponse<UserInfoRes> delete(@PathVariable int id) {
-        User user = userService.findById(id).get();
+    public ResponseEntity<Response<UserInfoRes>> delete(@PathVariable int userId) {
+        User user = userService.findById(userId);
 
         userService.delete(user);
-        return CommonResponse.success(null, "유저 삭제 성공");
+        return ResponseEntity.ok(CommonResponse.success(null, "유저 삭제 성공"));
     }
 
 }
