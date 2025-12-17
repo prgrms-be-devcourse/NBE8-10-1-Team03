@@ -1,6 +1,7 @@
 package com.nbe8101team03.domain.orders.service;
 
 import com.nbe8101team03.domain.orders.dto.OrderResponse;
+import com.nbe8101team03.domain.orders.dto.UserOrderItemResponse;
 import com.nbe8101team03.domain.orders.dto.UserOrdersResponse;
 import com.nbe8101team03.domain.orders.entity.Order;
 import com.nbe8101team03.domain.orders.entity.OrderStatus;
@@ -92,24 +93,25 @@ public class OrderService {
     }
 
 //    유저별 주문 조회
-    @Transactional(readOnly = true)
-    public UserOrdersResponse getOrdersByEmail(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new OrderException(OrderErrorCode.UNKNOWN_USER));
+@Transactional(readOnly = true)
+public UserOrdersResponse getOrdersByEmail(String email) {
+    User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new OrderException(OrderErrorCode.UNKNOWN_USER));
 
-        List<OrderResponse> orders = orderRepository.findAllByUserOrderByOrderDateDesc(user)
-                .stream()
-                .map(OrderResponse::from)
-                .toList();
+    List<UserOrderItemResponse> orders =
+            orderRepository.findAllByUserOrderByOrderDateDesc(user)
+                    .stream()
+                    .map(UserOrderItemResponse::from)
+                    .toList();
 
-        return new UserOrdersResponse(
-                user.getEmail(),
-                user.getAddress(),
-                user.getZipcode(),
-                orders
-        );
+    return new UserOrdersResponse(
+            user.getEmail(),
+            user.getAddress(),
+            user.getZipcode(),
+            orders
+    );
+}
 
-    }
 
 //    관리자용 전체 조회
     @Transactional(readOnly = true)

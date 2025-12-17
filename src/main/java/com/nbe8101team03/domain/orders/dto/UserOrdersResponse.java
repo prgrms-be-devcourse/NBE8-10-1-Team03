@@ -6,7 +6,7 @@ public record UserOrdersResponse(
         String email,
         String address,
         int zipcode,
-        List<OrderResponse> orders
+        List<UserOrderItemResponse> orders
 ) {
 
 }
