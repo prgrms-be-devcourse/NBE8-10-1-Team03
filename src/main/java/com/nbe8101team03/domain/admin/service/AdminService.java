@@ -47,8 +47,11 @@ public class AdminService {
      * includeInactive=false : active admin 반환
      */
     public List<AdminResponse> list(boolean includeInactive) {
-        return adminRepository.findAll().stream()
-                .filter(a -> includeInactive || isActive(a))
+        List<Admin> admins = includeInactive
+                ? adminRepository.findAll()
+                : adminRepository.findAllByActiveTrue();
+
+        return admins.stream()
                 .map(a -> new AdminResponse(a.getId(), a.getUserId(), isActive(a)))
                 .toList();
     }
