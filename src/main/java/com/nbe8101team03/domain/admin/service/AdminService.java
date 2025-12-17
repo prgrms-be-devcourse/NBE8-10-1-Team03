@@ -88,6 +88,26 @@ public class AdminService {
         admin.deactivate();
     }
 
+    //    어드민 소프트 복구
+    @Transactional
+    public void activate(Long adminId) {
+        Admin admin = adminRepository.findById(adminId)
+                .orElseThrow(() -> new AdminException(
+                        AdminErrorCode.ADMIN_NOT_FOUND,
+                        "adminActivate Error",
+                        "admin not found"
+                ));
+
+        if (!isActive(admin)) {
+            throw new AdminException(
+                    AdminErrorCode.ADMIN_ALREADY_ACTIVATED,
+                    "adminActivate Error",
+                    "admin already Activated"
+            );
+        }
+        admin.activate();
+    }
+
     private boolean isActive(Admin admin) {
         return admin.isActive();
     }

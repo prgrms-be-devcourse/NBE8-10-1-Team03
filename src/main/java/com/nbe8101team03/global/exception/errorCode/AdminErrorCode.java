@@ -24,6 +24,10 @@ public enum AdminErrorCode implements ErrorCode{
     ADMIN_ALREADY_DEACTIVATED(
             HttpStatus.BAD_REQUEST,
             "ADMIN_ALREADY_DEACTIVATED"
+    ),
+    ADMIN_ALREADY_ACTIVATED(
+            HttpStatus.BAD_REQUEST,
+            "ADMIN_ALREADY_ACTIVATED"
     );
 
     private final HttpStatus status;

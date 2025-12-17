@@ -50,6 +50,13 @@ public class AdminController {
         return ResponseEntity.ok(CommonResponse.success(null, "어드민 비활성화 성공"));
     }
 
+    //    어드민 소프트 복구
+    @PatchMapping("/{adminId}/activate")
+    public ResponseEntity<CommonResponse<Void>> activate(@PathVariable Long adminId) {
+        adminService.activate(adminId);
+        return ResponseEntity.ok(CommonResponse.success(null, "어드민 활성화 성공"));
+    }
+
     //    주문 리스트
 //    @GetMapping("/list")
 
