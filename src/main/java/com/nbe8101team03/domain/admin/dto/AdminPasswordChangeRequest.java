@@ -8,7 +8,7 @@ public record AdminPasswordChangeRequest (
         String currentPassword,
 
         @NotBlank
-        @Size(min = 4, max = 255)
+        @Size(min = 8, max = 32)
         String newPassword
 ){
 
