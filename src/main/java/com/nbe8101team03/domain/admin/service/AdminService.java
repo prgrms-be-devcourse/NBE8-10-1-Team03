@@ -26,11 +26,11 @@ public class AdminService {
     // 어드민 생성
     @Transactional
     public AdminResponse create(AdminRequest adminRequest) {
-        if (adminRepository.existsByUserId(adminRequest.userId())) {
-            throw new AdminException(
+                if (adminRepository.existsByUserId(adminRequest.userId())) {
+                    throw new AdminException(
                     AdminErrorCode.ADMIN_ALREADY_EXISTS,
-                    "adminCreate Error",
-                    "userId already exist");
+                    "adminCreate error",
+                    "admin already exist");
         }
 
         Admin admin = Admin.builder()
@@ -63,7 +63,7 @@ public class AdminService {
         Admin admin = adminRepository.findById(adminId)
                 .orElseThrow(() -> new AdminException(
                         AdminErrorCode.ADMIN_NOT_FOUND,
-                        "adminDetail Error",
+                        "adminDetail error",
                         "admin not found"
                 ));
 
@@ -76,14 +76,14 @@ public class AdminService {
         Admin admin = adminRepository.findById(adminId)
                 .orElseThrow(() -> new AdminException(
                         AdminErrorCode.ADMIN_NOT_FOUND,
-                        "adminDeactivate Error",
+                        "adminDeactivate error",
                         "admin not found"
                 ));
 
         if (!isActive(admin)) {
             throw new AdminException(
                     AdminErrorCode.ADMIN_ALREADY_DEACTIVATED,
-                    "adminDeactivate Error",
+                    "adminDeactivate error",
                     "admin already deactivated"
             );
         }
@@ -96,15 +96,15 @@ public class AdminService {
         Admin admin = adminRepository.findById(adminId)
                 .orElseThrow(() -> new AdminException(
                         AdminErrorCode.ADMIN_NOT_FOUND,
-                        "adminActivate Error",
+                        "adminActivate error",
                         "admin not found"
                 ));
 
-        if (!isActive(admin)) {
+        if (isActive(admin)) {
             throw new AdminException(
                     AdminErrorCode.ADMIN_ALREADY_ACTIVATED,
-                    "adminActivate Error",
-                    "admin already Activated"
+                    "adminActivate error",
+                    "admin already activated"
             );
         }
         admin.activate();
@@ -116,7 +116,7 @@ public class AdminService {
         Admin admin = adminRepository.findById(adminId)
                 .orElseThrow(() -> new AdminException(
                         AdminErrorCode.ADMIN_NOT_FOUND,
-                        "adminUpdate Error",
+                        "adminUpdate error",
                         "admin not found"
                 ));
 
@@ -126,7 +126,7 @@ public class AdminService {
             if (adminRepository.existsByUserId(request.userId())) {
                 throw new AdminException(
                         AdminErrorCode.ADMIN_ALREADY_EXISTS,
-                        "adminUpdate Error",
+                        "adminUpdate error",
                         "admin already exist"
                 );
             }
@@ -142,7 +142,7 @@ public class AdminService {
         Admin admin = adminRepository.findById(adminId)
                 .orElseThrow(() -> new AdminException(
                         AdminErrorCode.ADMIN_NOT_FOUND,
-                        "adminChangePassword Error",
+                        "adminChangePassword error",
                         "admin not found"
                 ));
 
@@ -150,7 +150,7 @@ public class AdminService {
         if(!PasswordEncoder.matches(request.currentPassword(), admin.getPasswordHash())){
             throw new AdminException(
                     AdminErrorCode.ADMIN_PASSWORD_MISMATCH,
-                    "adminChangePassword Error",
+                    "adminChangePassword error",
                     "current password mismatch"
             );
         }
@@ -159,7 +159,7 @@ public class AdminService {
         if(PasswordEncoder.matches(request.newPassword(), admin.getPasswordHash())){
             throw new AdminException(
                     AdminErrorCode.ADMIN_PASSWORD_SAME_AS_OLD,
-                    "adminChangePassword Error",
+                    "adminChangePassword error",
                     "new password same as old password"
             );
         }
