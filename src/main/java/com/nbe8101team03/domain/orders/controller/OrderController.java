@@ -19,17 +19,10 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping("/create")
-    public ResponseEntity<Response<OrderResponse>> createOrder(@RequestBody CreateOrderRequest req) {
-        OrderResponse res = orderService.createOrder(
-                req.email() ,
-                req.address() ,
-                req.zipcode(),
-                req.productId(),
-                req.quantity()
-        );
+    public ResponseEntity<Void> createOrder(@RequestBody CreateOrderRequest req) {
+        orderService.createOrder(req);
 
-        return ResponseEntity.status(201)
-                .body(CommonResponse.success(res, "주문 생성을 성공하였습니다."));
+        return ResponseEntity.ok().build();
     }
     
 //    주문 단건 조회

@@ -1,19 +1,19 @@
 package com.nbe8101team03.domain.user.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter
-@Table(name="USERS")
+@Table(name="users")
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
-
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int user_id;
+    private int id;
+
     @Column(unique = true, nullable = false)
     private String email;
 

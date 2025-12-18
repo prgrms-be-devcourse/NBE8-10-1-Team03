@@ -8,4 +8,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+
+    public Boolean isExistUser(String email) {
+        return userRepository.existsByEmail(email);
+    }
 }

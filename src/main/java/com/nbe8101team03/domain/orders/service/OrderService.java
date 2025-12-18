@@ -1,5 +1,6 @@
 package com.nbe8101team03.domain.orders.service;
 
+import com.nbe8101team03.domain.orders.dto.CreateOrderRequest;
 import com.nbe8101team03.domain.orders.dto.OrderResponse;
 import com.nbe8101team03.domain.orders.dto.UserOrderItemResponse;
 import com.nbe8101team03.domain.orders.dto.UserOrdersResponse;
@@ -11,15 +12,13 @@ import com.nbe8101team03.domain.product.repository.ProductRepository;
 import com.nbe8101team03.domain.user.entity.User;
 import com.nbe8101team03.domain.user.repository.UserRepository;
 import com.nbe8101team03.global.exception.errorCode.OrderErrorCode;
-import com.nbe8101team03.global.exception.errorCode.ProductErrorCode;
 import com.nbe8101team03.global.exception.exception.OrderException;
-import com.nbe8101team03.global.exception.exception.ProductException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,53 +31,44 @@ public class OrderService {
 
 
 //    주문하기
-    public OrderResponse createOrder(String email, String address, int zipcode, Long productId , int quantity) {
+    public void createOrder(CreateOrderRequest dto) {
 //       유저생성
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByEmail(dto.email())
                 .orElseGet(() -> {
-                    User newUser = new User();
-                    newUser.setEmail(email);
-                    newUser.setAddress(address);
-                    newUser.setZipcode(zipcode);
+                    User newUser = User.builder()
+                            .email(dto.email())
+                            .address(dto.address())
+                            .zipcode(dto.zipcode())
+                            .build();
                     return userRepository.save(newUser);
                 });
-//        추후  User merge 되면 변경할예정
-//        User newUser = User.builder()
-//                .email(email)
-//                .address(address)
-//                .zipcode(zipcode)
-//                .build();
-        
-//        입력값 검증
-        if (quantity <= 0) {
+
+        Map<Long, Integer> quantityMap = dto.details().stream()
+                                                 .collect(Collectors.toMap(
+                                                         CreateOrderRequest.OrderDetail::productId,
+                                                         CreateOrderRequest.OrderDetail::quantity,
+                                                         Integer::sum
+                                                 ));
+
+        Set<Long> productIds = quantityMap.keySet();
+        List<Product> products = productRepository.findAllByIdIn(productIds);
+
+        if(productIds.size() != products.size()) {
             throw new OrderException(OrderErrorCode.INVALID_QUANTITY);
         }
 
-//        상품 조회
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() ->
-                        new ProductException(
-                                ProductErrorCode.UNKNOWN_PRODUCT,
-                                "상품이 존재하지 않습니다. productId=" + productId
-                        )
-                );
-//        주문가격 계산
-        int totalPrice = product.getCost() * quantity;
+        List<Order> orders = new ArrayList<>();
+        for(Product product : products) {
+            orders.add(Order.builder()
+                            .user(user)
+                            .product(product)
+                            .quantity(quantityMap.get(product.getId()))
+                            .status(OrderStatus.READY)
+                            .totalPrice(product.getCost() * quantityMap.get(product.getId()))
+                            .build());
+        }
 
-
-//        주문 생성
-        Order order = Order.builder()
-                .user(user)
-                .product(product)
-                .quantity(quantity)
-                .status(OrderStatus.READY)
-                .totalPrice(totalPrice)
-                .build();
-
-
-
-        Order saveorder = orderRepository.save(order);
-        return OrderResponse.from(saveorder);
+        orderRepository.saveAll(orders);
     }
 
 
@@ -135,7 +125,7 @@ public UserOrdersResponse getOrdersByEmail(String email) {
 
         orderRepository.delete(order);
 
-        if (!orderRepository.existsByUser(user)) {
+        if (orderRepository.existsByUser(user)) {
             userRepository.delete(user);
         }
 

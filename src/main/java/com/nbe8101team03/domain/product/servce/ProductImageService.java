@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,7 +22,7 @@ public class ProductImageService {
     private final ProductImageRepository productImageRepository;
 
     @Transactional
-    public Long saveImage(MultipartFile file) {
+    public String saveImage(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             throw new ProductException(ProductErrorCode.UNKNOWN_IMAGE,
                     "[ProductImageService#saveImage] no input image", "입력된 이미지가 없습니다.");
@@ -34,8 +35,10 @@ public class ProductImageService {
             throw new ProductException(ProductErrorCode.UNKNOWN_IMAGE,
                     "[ProductImageService#saveImage] decoding fail", "이미지 형식이 올바르지 않습니다.");
         }
+        String id = UUID.randomUUID().toString();
 
         ProductImage image = ProductImage.builder()
+                .id(id)
                 .image(bytes)
                 .build();
 
@@ -43,12 +46,12 @@ public class ProductImageService {
     }
 
     @Transactional
-    public void deleteImage(Long id) {
+    public void deleteImage(String id) {
         productImageRepository.deleteById(id);
     }
 
     @Transactional(readOnly = true)
-    public byte[] loadImage(Long imageId) {
+    public byte[] loadImage(String imageId) {
         ProductImage image = productImageRepository.findById(imageId)
                 .orElseThrow(() -> new ProductException(ProductErrorCode.UNKNOWN_IMAGE));
 
@@ -56,7 +59,7 @@ public class ProductImageService {
     }
 
     @Transactional(readOnly = true)
-    public Map<Long, byte[]> loadImages(List<Long> imageIds) {
+    public Map<String, byte[]> loadImages(List<String> imageIds) {
         List<ProductImage> images = productImageRepository.findAllByIdIn(imageIds);
 
         return images.stream()

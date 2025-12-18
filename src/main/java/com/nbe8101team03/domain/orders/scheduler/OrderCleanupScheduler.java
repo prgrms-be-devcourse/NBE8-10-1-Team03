@@ -33,7 +33,8 @@ public class OrderCleanupScheduler {
 
             orderRepository.delete(order);
 
-            if (!orderRepository.existsByUser(user)) {
+            if (orderRepository.existsByUser(user)) {
+                orderRepository.deleteAll(oldOrders);
                 userRepository.delete(user);
             }
         }

@@ -47,11 +47,15 @@ public class Product {
     private String description;
 
     @Column(name = "image_id")
-    private Long imageId;
+    private String imageId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator")
     private Admin admin;
+
+    @Column(name = "active")
+    @Builder.Default
+    private boolean isActive = true;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -67,6 +71,10 @@ public class Product {
         if (cost != null) this.cost = dto.cost();
         this.description = dto.description();
         if (imageId != null) this.imageId = dto.imageId();
+    }
+
+    public void turnActive(boolean val) {
+        this.isActive = val;
     }
 
 

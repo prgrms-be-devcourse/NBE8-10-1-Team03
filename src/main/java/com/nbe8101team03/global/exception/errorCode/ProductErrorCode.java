@@ -14,7 +14,8 @@ public enum ProductErrorCode implements ErrorCode {
     MEMBER_WRITE_FAIL(HttpStatus.FORBIDDEN, "상품을 편집할 권한이 없습니다."),
     READ_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "상품 정보를 불러올 수 없습니다."),
 
-    UNKNOWN_IMAGE(HttpStatus.NOT_FOUND, "이미지를 찾을 수 없습니다.");
+    UNKNOWN_IMAGE(HttpStatus.NOT_FOUND, "이미지를 찾을 수 없습니다."),
+    DELETE_FAIL(HttpStatus.BAD_REQUEST, "주문한 고객이 존재합니다.");
 
 
     private final HttpStatus status;

@@ -2,6 +2,7 @@ package com.nbe8101team03.domain.product.dto;
 
 import lombok.Builder;
 
+
 /**
  * product 데이터 조회시 전송될 응답
  * @param id product 의 아이디
@@ -18,6 +19,6 @@ public record ProductInfoRes (
         String type,
         Integer cost,
         String description,
-        Long imageId
+        String imageId
 ) {
 }
