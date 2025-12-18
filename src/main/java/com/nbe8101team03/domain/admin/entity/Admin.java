@@ -18,21 +18,31 @@ public class Admin {
     @Column(name = "user_id", length = 10, nullable = false, unique = true)
     private String userId;
 
-    @Column(name = "password", length = 255, nullable = false)
-    private String password;
+    @Column(name = "password_hash", length = 255, nullable = false)
+    private String passwordHash;
+
+    @Column(name = "active", nullable = false)
+    private boolean active = true;
 
     @Builder
-    public Admin(String userId, String password){
+    public Admin(String userId, String passwordHash){
         this.userId = userId;
-        this.password = password;
+        this.passwordHash = passwordHash;
     }
 
-    // todo 아이디나 비밀번호 변경에 필요
-//    public void setUserId(String userId) {
-//        this.userId = userId;
-//    }
-//
-//    public void setPassword(String password) {
-//        this.password = password;
-//    }
+    public void deactivate() {
+        this.active = false;
+    }
+
+    public void activate() {
+        this.active = true;
+    }
+
+    public void changeUserId(String userId){
+        this.userId = userId;
+    }
+
+    public void changePasswordHash(String passwordHash){
+        this.passwordHash = passwordHash;
+    }
 }
