@@ -13,41 +13,31 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
 public class UserScheduler {
     private final UserService userService;
     private final UserRepository userRepository;
-    private final OrderRepository orderRepository;
 
-    @Transactional
-    @Scheduled(fixedRate = 3600000) // 1시간마다 실행되도록 설정
-    public void UserDeativeOrders() {
-        List<Order> orderList = orderRepository.findAll();
-
-        // 구매가 종료되면 유저를 비활성화 시키기 위해..
-        // 1시간마다 모든 오더 조회 => 오더 상태가 COMPLETED인 것만 골라서
-        // 해당 오더에 연결된 유저를 비활성화
-        for (Order order : orderList) {
-            if (order.getStatus() == OrderStatus.COMPLETED) {
-                User targetUser = order.getUser();
-                userService.deactivateUser(targetUser);
-            }
-        }
-    }
 
     @Transactional
     @Scheduled(cron = "0 0 3 * * *") // 매일 새벽 3시에 실행
     public void UserDeleteOrders() {
-        // 매일 새벽 3시에 실행,
-        // 비활성화된 유저만 골라서 하드 딜리트
+        // 매일 새벽 3시에 실행, 오더가 없는 고아 유저만 골라서 하드 딜리트
 
-        List<User> userList = userRepository.findAll();
+        List<User> userList = userRepository.findAll(); // 모든 유저 리스트로 가져옴
+        Set<Long> orderedUserSet = userRepository.findAll_ordered_userid();
+        // 오더에 속한 모든 유저 아이디를 set으로 가져옴
+
 
         for (User user : userList) {
-            if (!user.isActive()) {
-                userService.hardDelete(user);
+            // 모든 유저 순회 :
+            // 해당 유저가 orderedUserSet 에 속해있다? -> 통과
+            // 해당 유저가 orderedUserSet 에 없다? -> 하드 딜리트
+            if (!orderedUserSet.contains(user.getUser_id())) {
+                userService.delete(user);
             }
         }
     }

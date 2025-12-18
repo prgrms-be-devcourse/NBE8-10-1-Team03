@@ -1,6 +1,9 @@
 package com.nbe8101team03.domain.user.service;
 
+import com.nbe8101team03.domain.orders.entity.Order;
 import com.nbe8101team03.domain.orders.repository.OrderRepository;
+import com.nbe8101team03.domain.product.entity.Product;
+import com.nbe8101team03.domain.product.repository.ProductRepository;
 import com.nbe8101team03.domain.user.entity.User;
 import com.nbe8101team03.domain.user.repository.UserRepository;
 import com.nbe8101team03.global.exception.errorCode.UserErrorCode;
@@ -16,6 +19,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final OrderRepository orderRepository;
+    private final ProductRepository productRepository;
 
     @Transactional
     public User createUser(String email, String address, int zipcode){
@@ -61,18 +65,12 @@ public class UserService {
     }
 
     @Transactional
-    public void deactivateUser(User user) {
-        if (user.isActive()) {
-            user.deactivate();
-        }
-    }
-
-    @Transactional
-    public void hardDelete(User user){
+    public void delete(User user){
         //  주문 중인 유저인지 확인 => 주문 중이라면 삭제되지 않도록.
         if(orderRepository.existsByUser(user)) {
             throw new UserException(UserErrorCode.NOT_DELETE_USER);
         }
         userRepository.delete(user);
     }
+
 }

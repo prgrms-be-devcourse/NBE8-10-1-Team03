@@ -42,13 +42,4 @@ public class User {
         this.zipcode = zipcode;
     }
 
-    // 유저 비활성화
-    public void deactivate() {
-        this.active = false;
-    }
-
-    // 유저 활성화
-    public void activate() {
-        this.active = true;
-    }
 }
