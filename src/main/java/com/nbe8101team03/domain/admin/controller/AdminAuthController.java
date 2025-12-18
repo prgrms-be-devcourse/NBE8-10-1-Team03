@@ -21,8 +21,8 @@ public class AdminAuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<CommonResponse<AdminLoginResponse>> login(@RequestBody @Valid AdminLoginRequest request){
+    public ResponseEntity<CommonResponse<String>> login(@RequestBody @Valid AdminLoginRequest request){
         AdminLoginResponse res = adminAuthService.login(request);
-        return ResponseEntity.ok(CommonResponse.success(res, "로그인 성공"));
+        return ResponseEntity.ok(CommonResponse.success(res.accessToken(), "로그인 성공"));
     }
 }
