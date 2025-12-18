@@ -1,3 +1,8 @@
+// 필요없는 기능
+// 실제론 사용되지 않을 컨트롤러
+
+
+
 package com.nbe8101team03.domain.user.controller;
 
 import com.nbe8101team03.domain.user.dto.UserInfoDto;

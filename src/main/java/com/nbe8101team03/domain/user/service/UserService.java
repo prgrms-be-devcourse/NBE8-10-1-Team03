@@ -62,10 +62,6 @@ public class UserService {
 
     @Transactional
     public void deactivateUser(User user) {
-//        User user = userRepository.findById(userId)
-//                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND,
-//                        "UserDeactivate Error",
-//                        "user not found" ));
         if (user.isActive()) {
             user.deactivate();
         }

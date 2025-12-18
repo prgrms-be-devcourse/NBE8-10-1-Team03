@@ -30,13 +30,20 @@ public class OrderService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
 
-
-//    주문하기
+    //    주문하기
     public OrderResponse createOrder(String email, String address, int zipcode, Long productId , int quantity) {
 //       유저생성
         User user = userRepository.findByEmail(email)
+                // 유저가 비활성화된 상태라면, 해당 유저를 활성화 시킴.
+                .map(targetUser -> {
+                    if(!targetUser.isActive()){
+                        targetUser.activate();
+                    }
+                    return targetUser;
+                } )
                 .orElseGet(() -> {
                     User newUser = User.builder()
+
                             .email(email)
                             .address(address)
                             .zipcode(zipcode)
