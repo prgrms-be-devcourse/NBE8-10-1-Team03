@@ -36,10 +36,11 @@ public class OrderService {
 //       유저생성
         User user = userRepository.findByEmail(email)
                 .orElseGet(() -> {
-                    User newUser = new User();
-                    newUser.setEmail(email);
-                    newUser.setAddress(address);
-                    newUser.setZipcode(zipcode);
+                    User newUser = User.builder()
+                            .email(email)
+                            .address(address)
+                            .zipcode(zipcode)
+                            .build();
                     return userRepository.save(newUser);
                 });
 //        추후  User merge 되면 변경할예정

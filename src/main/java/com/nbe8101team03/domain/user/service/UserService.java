@@ -61,8 +61,19 @@ public class UserService {
     }
 
     @Transactional
-    public void delete(User user){
-        // 주문 중인 유저인지 확인 => 주문 중이라면 삭제되지 않도록.
+    public void softDelete(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND,
+                        "UserDeactivate Error",
+                        "user not found" ));
+        if (user.isActive()) {
+            user.deactivate();
+        }
+    }
+
+    @Transactional
+    public void hardDelete(User user){
+        //  주문 중인 유저인지 확인 => 주문 중이라면 삭제되지 않도록.
         if(orderRepository.existsByUser(user)) {
             throw new UserException(UserErrorCode.NOT_DELETE_USER);
         }

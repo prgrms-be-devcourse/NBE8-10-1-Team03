@@ -74,7 +74,7 @@ public class UserController {
     public ResponseEntity<Response<UserInfoRes>> delete(@PathVariable Long userId) {
         User user = userService.findById(userId);
 
-        userService.delete(user);
+        userService.hardDelete(user);
         return ResponseEntity.ok(CommonResponse.success(null, "유저 삭제 성공"));
     }
 
