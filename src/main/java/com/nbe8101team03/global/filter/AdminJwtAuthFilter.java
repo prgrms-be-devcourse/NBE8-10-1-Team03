@@ -1,6 +1,7 @@
 package com.nbe8101team03.global.filter;
 
 import com.nbe8101team03.global.exception.errorCode.JwtErrorCode;
+import com.nbe8101team03.global.exception.exception.BaseException;
 import com.nbe8101team03.global.exception.exception.JwtException;
 import com.nbe8101team03.global.util.JwtUtil;
 import jakarta.servlet.FilterChain;
@@ -14,7 +15,7 @@ import java.io.IOException;
 public class AdminJwtAuthFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
 
-    public AdminJwtAuthFilter(JwtUtil jwtUtil){
+    public AdminJwtAuthFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
 
@@ -24,29 +25,35 @@ public class AdminJwtAuthFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
         String token = resolveBearerToken(request);
-        if(token == null){
+        if (token == null) {
             throw new JwtException(JwtErrorCode.JWT_MISSING,
                     "JWT_MISSING",
                     "authorization header or bearer token does not exist"
             );
         }
 
-        if(jwtUtil.isExpired(token)){
+        if (jwtUtil.isExpired(token)) {
             throw new JwtException(JwtErrorCode.JWT_EXPIRED,
                     "JWT_EXPIRED",
                     "jwt token has expired"
-                    );
+            );
         }
 
         String role;
         try {
             role = jwtUtil.getRole(token);
-        } catch(Exception e){
-            throw new JwtException(JwtErrorCode.JWT_INVALID);
+        } catch (Exception e) {
+            throw new JwtException(JwtErrorCode.JWT_INVALID,
+                    "JWT_INVALID",
+                    "jwt token is invalid"
+            );
         }
 
-        if(!"ADMIN".equals(role)){
-            throw new JwtException(JwtErrorCode.JWT_FORBIDDEN);
+        if (!"ADMIN".equals(role)) {
+            throw new JwtException(JwtErrorCode.JWT_FORBIDDEN,
+                    "JWT_INVALID",
+                    "jwt token is invalid"
+            );
         }
 
         request.setAttribute("auth.userId", jwtUtil.getUserId(token));
@@ -55,10 +62,10 @@ public class AdminJwtAuthFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private String resolveBearerToken(HttpServletRequest request){
+    private String resolveBearerToken(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
-        if(header == null) return null;
-        if(!header.startsWith("Bearer")) return null;
+        if (header == null) return null;
+        if (!header.startsWith("Bearer")) return null;
         String token = header.substring(7).trim();
         return token.isEmpty() ? null : token;
     }
