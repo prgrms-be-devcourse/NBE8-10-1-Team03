@@ -8,17 +8,14 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.filter.OncePerRequestFilter;
-import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
 public class AdminJwtAuthFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
-    private final ObjectMapper objectMapper;
 
-    public AdminJwtAuthFilter(JwtUtil jwtUtil, ObjectMapper objectMapper){
+    public AdminJwtAuthFilter(JwtUtil jwtUtil){
         this.jwtUtil = jwtUtil;
-        this.objectMapper = objectMapper;
     }
 
     protected void doFilterInternal(
@@ -53,7 +50,7 @@ public class AdminJwtAuthFilter extends OncePerRequestFilter {
         }
 
         request.setAttribute("auth.userId", jwtUtil.getUserId(token));
-        request.setAttribute("autho.role", role);
+        request.setAttribute("auth.role", role);
 
         filterChain.doFilter(request, response);
     }
