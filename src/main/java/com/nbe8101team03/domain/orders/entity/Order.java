@@ -22,6 +22,9 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderId;
 
+    @Column(nullable = false)
+    private Long shipmentId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -64,8 +67,13 @@ public class Order {
     @Column(nullable = false)
     private int totalPrice;
 
+    public void changeStatus(OrderStatus status) {
+        this.status = status;
+    }
+
     @Builder
-    public Order(User user, Product product , OrderStatus status,  int quantity, int totalPrice) {
+    public Order(Long shipmentId, User user, Product product , OrderStatus status,  int quantity, int totalPrice) {
+        this.shipmentId = shipmentId;
         this.user = user;
         this.product = product;
         this.status = status;

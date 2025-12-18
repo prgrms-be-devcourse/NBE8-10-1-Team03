@@ -18,8 +18,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,21 +36,27 @@ public class OrderService {
 //    주문하기
     public OrderResponse createOrder(String email, String address, int zipcode, Long productId , int quantity) {
 //       유저생성
+//        User user = userRepository.findByEmail(email)
+//                .orElseGet(() -> {
+//                    User newUser = new User();
+//                    newUser.setEmail(email);
+//                    newUser.setAddress(address);
+//                    newUser.setZipcode(zipcode);
+//                    return userRepository.save(newUser);
+//                });
+
         User user = userRepository.findByEmail(email)
-                .orElseGet(() -> {
-                    User newUser = new User();
-                    newUser.setEmail(email);
-                    newUser.setAddress(address);
-                    newUser.setZipcode(zipcode);
-                    return userRepository.save(newUser);
-                });
-//        추후  User merge 되면 변경할예정
-//        User newUser = User.builder()
-//                .email(email)
-//                .address(address)
-//                .zipcode(zipcode)
-//                .build();
-        
+                .orElseGet(() ->
+                        userRepository.save(
+                                User.builder()
+                                        .email(email)
+                                        .address(address)
+                                        .zipcode(zipcode)
+                                        .build()
+                        )
+                );
+
+
 //        입력값 검증
         if (quantity <= 0) {
             throw new OrderException(OrderErrorCode.INVALID_QUANTITY);
@@ -62,17 +70,24 @@ public class OrderService {
                                 "상품이 존재하지 않습니다. productId=" + productId
                         )
                 );
-//        주문가격 계산
-        int totalPrice = product.getCost() * quantity;
+
+//      오늘기준 날짜 계산
+        LocalDateTime startOfToday = LocalDate.now().atStartOfDay();
+        LocalDateTime endOfToday = LocalDate.now().atTime(23, 59, 59);
+
+        Optional<Order> baseOrder = orderRepository.findFirstByUserAndStatusAndOrderDateBetween( user, OrderStatus.READY, startOfToday, endOfToday );
+        Long shipmentId = baseOrder .map(Order::getShipmentId) .orElseGet(() -> System.currentTimeMillis());
+
 
 
 //        주문 생성
         Order order = Order.builder()
+                .shipmentId(shipmentId)
                 .user(user)
                 .product(product)
                 .quantity(quantity)
+                .totalPrice(product.getCost() * quantity)
                 .status(OrderStatus.READY)
-                .totalPrice(totalPrice)
                 .build();
 
 
