@@ -54,5 +54,15 @@ public class AdminJwtAuthFilter extends OncePerRequestFilter {
 
         request.setAttribute("auth.userId", jwtUtil.getUserId(token));
         request.setAttribute("autho.role", role);
+
+        filterChain.doFilter(request, response);
+    }
+
+    private String resolveBearerToken(HttpServletRequest request){
+        String header = request.getHeader("Authorization");
+        if(header == null) return null;
+        if(!header.startsWith("Bearer")) return null;
+        String token = header.substring(7).trim();
+        return token.isEmpty() ? null : token;
     }
 }
