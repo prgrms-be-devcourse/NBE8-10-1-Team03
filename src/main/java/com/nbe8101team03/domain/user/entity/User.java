@@ -25,6 +25,7 @@ public class User {
     @Column(nullable = false)
     private int zipcode;
 
+
     // 빌더 사용하는 방향으로 수정
     @Builder
     public User(String email, String address, int zipcode) {
