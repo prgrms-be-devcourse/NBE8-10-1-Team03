@@ -1,6 +1,7 @@
 package com.nbe8101team03.domain.orders.scheduler;
 
 import com.nbe8101team03.domain.orders.entity.Order;
+import com.nbe8101team03.domain.orders.entity.OrderStatus;
 import com.nbe8101team03.domain.orders.repository.OrderRepository;
 import com.nbe8101team03.domain.user.entity.User;
 import com.nbe8101team03.domain.user.repository.UserRepository;
@@ -26,9 +27,13 @@ public class OrderCleanupScheduler {
     public void deleteOldOrders() {
         LocalDateTime twoDaysAgo = LocalDateTime.now().minusDays(2);
 
-        List<Order> oldOrders = orderRepository.findAllByOrderDateBefore(twoDaysAgo);
+        List<Order> oldOrders =
+                orderRepository.findAllByStatusAndOrderDateBefore(
+                        OrderStatus.COMPLETED,
+                        twoDaysAgo
+                );
 
-        for(Order order : oldOrders) {
+        for (Order order : oldOrders) {
             User user = order.getUser();
 
             orderRepository.delete(order);

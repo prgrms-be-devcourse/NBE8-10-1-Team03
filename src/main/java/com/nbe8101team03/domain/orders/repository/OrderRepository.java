@@ -3,6 +3,7 @@ package com.nbe8101team03.domain.orders.repository;
 
 import com.nbe8101team03.domain.orders.entity.Order;
 import com.nbe8101team03.domain.orders.entity.OrderStatus;
+import com.nbe8101team03.domain.product.entity.Product;
 import com.nbe8101team03.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -14,8 +15,13 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     boolean existsByUser(User user);
 
-    List<Order> findAllByUserOrderByOrderDateDesc(User user);
-    List<Order> findAllByOrderDateBefore(LocalDateTime date);
+    List<Order> findAllByUserOrderByOrderDateAsc(User user);
+
+    List<Order> findAllByStatusAndOrderDateBefore(
+            OrderStatus status,
+            LocalDateTime dateTime
+    );
+
 
     Optional<Order> findFirstByUserAndStatusAndOrderDateBetween(
             User user,
@@ -26,5 +32,15 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
 
     List<Order> findAllByStatus(OrderStatus status);
+
+//    기존주문에 수량 추가하기
+Optional<Order> findByUserAndProductAndShipmentIdAndStatus(
+        User user,
+        Product product,
+        Long shipmentId,
+        OrderStatus status
+);
+
+
 
 }

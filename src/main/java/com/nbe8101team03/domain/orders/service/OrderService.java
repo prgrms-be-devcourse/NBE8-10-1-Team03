@@ -34,17 +34,10 @@ public class OrderService {
 
 
 //    주문하기
+    @Transactional
     public OrderResponse createOrder(String email, String address, int zipcode, Long productId , int quantity) {
-//       유저생성
-//        User user = userRepository.findByEmail(email)
-//                .orElseGet(() -> {
-//                    User newUser = new User();
-//                    newUser.setEmail(email);
-//                    newUser.setAddress(address);
-//                    newUser.setZipcode(zipcode);
-//                    return userRepository.save(newUser);
-//                });
 
+//       유저생성
         User user = userRepository.findByEmail(email)
                 .orElseGet(() ->
                         userRepository.save(
@@ -57,7 +50,7 @@ public class OrderService {
                 );
 
 
-//        입력값 검증
+//        수량 검증
         if (quantity <= 0) {
             throw new OrderException(OrderErrorCode.INVALID_QUANTITY);
         }
@@ -71,16 +64,37 @@ public class OrderService {
                         )
                 );
 
-//      오늘기준 날짜 계산
+//      오늘 오늘 READY 주문 기준 shipmentId 결정
         LocalDateTime startOfToday = LocalDate.now().atStartOfDay();
         LocalDateTime endOfToday = LocalDate.now().atTime(23, 59, 59);
 
-        Optional<Order> baseOrder = orderRepository.findFirstByUserAndStatusAndOrderDateBetween( user, OrderStatus.READY, startOfToday, endOfToday );
-        Long shipmentId = baseOrder .map(Order::getShipmentId) .orElseGet(() -> System.currentTimeMillis());
+        Long shipmentId = orderRepository
+                .findFirstByUserAndStatusAndOrderDateBetween(
+                        user,
+                        OrderStatus.READY,
+                        startOfToday,
+                        endOfToday
+                )
+                .map(Order::getShipmentId)
+                .orElseGet(() -> System.currentTimeMillis());
 
+        // 같은 상품 + 같은 shipment + READY 주문 있는지 확인
+        Optional<Order> existingOrder =
+                orderRepository.findByUserAndProductAndShipmentIdAndStatus(
+                        user,
+                        product,
+                        shipmentId,
+                        OrderStatus.READY
+                );
 
+        // 있으면 quantity 누적
+        if (existingOrder.isPresent()) {
+            Order order = existingOrder.get();
+            order.addQuantity(quantity);
+            return OrderResponse.from(order);
+        }
 
-//        주문 생성
+//      없을 경우 주문 생성
         Order order = Order.builder()
                 .shipmentId(shipmentId)
                 .user(user)
@@ -114,7 +128,7 @@ public UserOrdersResponse getOrdersByEmail(String email) {
             .orElseThrow(() -> new OrderException(OrderErrorCode.UNKNOWN_USER));
 
     List<UserOrderItemResponse> orders =
-            orderRepository.findAllByUserOrderByOrderDateDesc(user)
+            orderRepository.findAllByUserOrderByOrderDateAsc(user)
                     .stream()
                     .map(UserOrderItemResponse::from)
                     .toList();

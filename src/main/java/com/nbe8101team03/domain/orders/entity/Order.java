@@ -71,6 +71,11 @@ public class Order {
         this.status = status;
     }
 
+    public void addQuantity(int quantity) {
+        this.quantity += quantity;
+        this.totalPrice += this.product.getCost() * quantity;
+    }
+
     @Builder
     public Order(Long shipmentId, User user, Product product , OrderStatus status,  int quantity, int totalPrice) {
         this.shipmentId = shipmentId;
