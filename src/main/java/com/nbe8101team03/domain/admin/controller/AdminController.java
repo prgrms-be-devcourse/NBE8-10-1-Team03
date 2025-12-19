@@ -1,9 +1,7 @@
 package com.nbe8101team03.domain.admin.controller;
 
 import com.nbe8101team03.domain.admin.dto.AdminPasswordChangeRequest;
-import com.nbe8101team03.domain.admin.dto.AdminRequest;
 import com.nbe8101team03.domain.admin.dto.AdminResponse;
-import com.nbe8101team03.domain.admin.dto.AdminUpdateRequest;
 import com.nbe8101team03.domain.admin.service.AdminService;
 import com.nbe8101team03.global.response.CommonResponse;
 import jakarta.validation.Valid;
