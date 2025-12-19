@@ -24,7 +24,7 @@ public class JwtUtil {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
-    private static final long EXPIRATION_TIME = 1000L * 60 * 30; // 30분 후 expired
+    private static final long EXPIRATION_TIME = 1000L * 60 * 60 * 10; // 10시간 후 expired
 
     //    JWT 생성
     public String generateToken(String userId, String role) {
