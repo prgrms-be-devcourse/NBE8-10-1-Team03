@@ -1,9 +1,7 @@
 package com.nbe8101team03.domain.user.service;
 
 import com.nbe8101team03.domain.orders.dto.UserOrderItemResponse;
-import com.nbe8101team03.domain.orders.entity.Order;
 import com.nbe8101team03.domain.orders.repository.OrderRepository;
-import com.nbe8101team03.domain.product.entity.Product;
 import com.nbe8101team03.domain.product.repository.ProductRepository;
 import com.nbe8101team03.domain.user.dto.UserTotalRes;
 import com.nbe8101team03.domain.user.entity.User;
