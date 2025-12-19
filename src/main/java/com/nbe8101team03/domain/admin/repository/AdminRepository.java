@@ -1,4 +1,11 @@
 package com.nbe8101team03.domain.admin.repository;
 
-public class AdminRepository {
+import com.nbe8101team03.domain.admin.entity.Admin;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface AdminRepository extends JpaRepository<Admin, Long> {
+    boolean existsByUserId(String userId);
+    List<Admin> findAllByActiveTrue();
 }

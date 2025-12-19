@@ -23,4 +23,10 @@ public class User {
     // 우편번호
     @Column(nullable = false)
     private int zipcode;
+
+    public void modify(String email, String address, int zipcode) {
+        this.email = email;
+        this.address = address;
+        this.zipcode = zipcode;
+    }
 }

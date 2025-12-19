@@ -1,6 +1,7 @@
 package com.nbe8101team03.domain.orders.controller;
 
 import com.nbe8101team03.domain.orders.dto.CreateOrderRequest;
+import com.nbe8101team03.domain.orders.dto.CreateOrderResponse;
 import com.nbe8101team03.domain.orders.dto.OrderResponse;
 import com.nbe8101team03.domain.orders.dto.UserOrdersResponse;
 import com.nbe8101team03.domain.orders.service.OrderService;
@@ -19,10 +20,12 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping("/create")
-    public ResponseEntity<Void> createOrder(@RequestBody CreateOrderRequest req) {
-        orderService.createOrder(req);
+    public ResponseEntity<Response<CreateOrderResponse>> createOrder(@RequestBody CreateOrderRequest req) {
 
-        return ResponseEntity.ok().build();
+        CreateOrderResponse res = orderService.createOrder(req);
+
+        return ResponseEntity.status(201)
+                .body(CommonResponse.success(res, "주문 생성을 성공하였습니다."));
     }
     
 //    주문 단건 조회

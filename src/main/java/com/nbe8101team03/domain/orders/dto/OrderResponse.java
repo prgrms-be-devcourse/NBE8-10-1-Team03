@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 public record OrderResponse(
         Long orderId,
+        Long shipmentId,
         String email,
         String address,
         int zipcode,
@@ -20,6 +21,7 @@ public record OrderResponse(
     public static OrderResponse from(Order order) {
         return new OrderResponse(
                 order.getOrderId(),
+                order.getShipmentId(),
                 order.getUser().getEmail(),
                 order.getUser().getAddress(),
                 order.getUser().getZipcode(),
