@@ -6,6 +6,9 @@ import com.nbe8101team03.domain.orders.entity.OrderStatus;
 import com.nbe8101team03.domain.product.entity.Product;
 import com.nbe8101team03.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -41,6 +44,15 @@ Optional<Order> findByUserAndProductAndShipmentIdAndStatus(
         OrderStatus status
 );
 
+// 삭제 스케쥴러
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("""
+        DELETE FROM Order o
+        WHERE o.status = :status
+          AND o.orderDate < :date
+    """)
+    int deleteOldOrders(@Param("status") OrderStatus status,
+                        @Param("date") LocalDateTime date);
 
 
 }

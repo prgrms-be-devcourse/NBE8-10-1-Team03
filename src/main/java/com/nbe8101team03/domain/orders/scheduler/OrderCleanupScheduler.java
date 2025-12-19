@@ -18,20 +18,11 @@ public class OrderCleanupScheduler {
     private final OrderRepository orderRepository;
 
 //    매일 새벽 3시에 실행
-
     @Transactional
     @Scheduled(cron = "0 0 3 * * *")
     public void deleteOldOrders() {
         LocalDateTime twoDaysAgo = LocalDateTime.now().minusDays(2);
-
-        List<Order> oldOrders =
-                orderRepository.findAllByStatusAndOrderDateBefore(
-                        OrderStatus.COMPLETED,
-                        twoDaysAgo
-                );
-
-        for (Order order : oldOrders) {
-            orderRepository.delete(order);
-        }
+        int deleted = orderRepository.deleteOldOrders(OrderStatus.COMPLETED, twoDaysAgo);
     }
+
 }
