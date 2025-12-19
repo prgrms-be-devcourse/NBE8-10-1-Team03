@@ -17,7 +17,7 @@ public class AdminAuthService {
     private final AdminRepository adminRepository;
     private final JwtUtil jwtUtil;
 
-    private static final long EXPIRES_IN_SECONDS = 60 * 30; // 30분
+    private static final long EXPIRES_IN_SECONDS = 60 * 60 * 10; // 10시간
 
     public AdminAuthService(AdminRepository adminRepository, JwtUtil jwtUtil) {
         this.adminRepository = adminRepository;
@@ -51,6 +51,13 @@ public class AdminAuthService {
         }
 
         String token = jwtUtil.generateToken(admin.getUserId(), "ADMIN");
+        if(token == null){
+            throw new AdminAuthException(
+                    AdminAuthErrorCode.ADMIN_TOKEN_GENERATION_FAILED,
+                    "ADMIN_TOKEN_GENERATION_FAILED",
+                    "token generation failed"
+            );
+        }
         return new AdminLoginResponse(token, "Bearer", EXPIRES_IN_SECONDS);
     }
 }

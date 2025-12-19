@@ -15,6 +15,11 @@ public enum AdminAuthErrorCode implements ErrorCode{
     ADMIN_INACTIVE(
             HttpStatus.FORBIDDEN,
             "admin is already inactive"
+    ),
+//    "ADMIN_TOKEN_GENERATION_FAILED"
+    ADMIN_TOKEN_GENERATION_FAILED(
+            HttpStatus.UNAUTHORIZED,
+            "token generation failed"
     );
 
     private final HttpStatus status;
