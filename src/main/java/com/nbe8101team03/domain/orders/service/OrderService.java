@@ -1,8 +1,6 @@
 package com.nbe8101team03.domain.orders.service;
 
-import com.nbe8101team03.domain.orders.dto.OrderResponse;
-import com.nbe8101team03.domain.orders.dto.UserOrderItemResponse;
-import com.nbe8101team03.domain.orders.dto.UserOrdersResponse;
+import com.nbe8101team03.domain.orders.dto.*;
 import com.nbe8101team03.domain.orders.entity.Order;
 import com.nbe8101team03.domain.orders.entity.OrderStatus;
 import com.nbe8101team03.domain.orders.repository.OrderRepository;
@@ -18,8 +16,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,65 +30,107 @@ public class OrderService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
 
-    //    주문하기
-    public OrderResponse createOrder(String email, String address, int zipcode, Long productId , int quantity) {
+
+
+//    주문하기
+@Transactional
+public CreateOrderResponse  createOrder(CreateOrderRequest dto) {
+
 //       유저생성
-        User user = userRepository.findByEmail(email)
-                // 유저가 비활성화된 상태라면, 해당 유저를 활성화 시킴.
-                .map(targetUser -> {
-                    if(!targetUser.isActive()){
-                        targetUser.activate();
-                    }
-                    return targetUser;
-                } )
-                .orElseGet(() -> {
-                    User newUser = User.builder()
+    User user = userRepository.findByEmail(dto.email())
+            .orElseGet(() -> userRepository.save(
+                    User.builder()
+                            .email(dto.email())
+                            .address(dto.address())
+                            .zipcode(dto.zipcode())
+                            .build()
+            ));
 
-                            .email(email)
-                            .address(address)
-                            .zipcode(zipcode)
-                            .build();
-                    return userRepository.save(newUser);
-                });
-//        추후  User merge 되면 변경할예정
-//        User newUser = User.builder()
-//                .email(email)
-//                .address(address)
-//                .zipcode(zipcode)
-//                .build();
-        
-//        입력값 검증
-        if (quantity <= 0) {
-            throw new OrderException(OrderErrorCode.INVALID_QUANTITY);
-        }
-
-//        상품 조회
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() ->
-                        new ProductException(
-                                ProductErrorCode.UNKNOWN_PRODUCT,
-                                "상품이 존재하지 않습니다. productId=" + productId
-                        )
-                );
-//        주문가격 계산
-        int totalPrice = product.getCost() * quantity;
+//        details 검증
 
 
-//        주문 생성
-        Order order = Order.builder()
-                .user(user)
-                .product(product)
-                .quantity(quantity)
-                .status(OrderStatus.READY)
-                .totalPrice(totalPrice)
-                .build();
+//        수량 검증
+    if (dto.details() == null || dto.details().isEmpty()) {
+        throw new OrderException(OrderErrorCode.INVALID_QUANTITY);
+    }
+    if (dto.details().stream().anyMatch(d -> d.quantity() <= 0)) {
+        throw new OrderException(OrderErrorCode.INVALID_QUANTITY);
+    }
+//        같은 상품이 여러번 들어오면 수량 합치기
+    Map<Long, Integer> quantityMap = dto.details().stream()
+            .collect(Collectors.toMap(
+                    CreateOrderRequest.OrderDetail::productId,
+                    CreateOrderRequest.OrderDetail::quantity,
+                    Integer::sum
+            ));
 
+    //        상품을 한번에 조회
+    Set<Long> productIds = quantityMap.keySet();
+    List<Product> products = productRepository.findAllById(productIds);
 
-
-        Order saveorder = orderRepository.save(order);
-        return OrderResponse.from(saveorder);
+//      없는 상품 섞였는지 체크
+    if (products.size() != productIds.size()) {
+        throw new ProductException(
+                ProductErrorCode.UNKNOWN_PRODUCT,
+                "요청에 존재하지 않는 상품이 포함되어 있습니다."
+        );
     }
 
+//      오늘 오늘 READY 주문 기준 shipmentId 결정
+    LocalDateTime startOfToday = LocalDate.now().atStartOfDay();
+    LocalDateTime endOfToday = LocalDate.now().atTime(23, 59, 59);
+
+    Long shipmentId = orderRepository
+            .findFirstByUserAndStatusAndOrderDateBetween(
+                    user,
+                    OrderStatus.READY,
+                    startOfToday,
+                    endOfToday
+            )
+            .map(Order::getShipmentId)
+            .orElseGet(() -> System.currentTimeMillis());
+
+    List<Order> newOrders = new ArrayList<>();
+    List<OrderResponse> result = new ArrayList<>();
+    for (Product product : products) {
+        int qty = quantityMap.get(product.getId());
+
+        Optional<Order> existingOrder =
+                orderRepository.findByUserAndProductAndShipmentIdAndStatus(
+                        user,
+                        product,
+                        shipmentId,
+                        OrderStatus.READY
+                );
+
+        if (existingOrder.isPresent()) {
+            Order order = existingOrder.get();
+            order.addQuantity(qty);
+            result.add(OrderResponse.from(order));
+            continue;
+        }
+
+        Order order = Order.builder()
+                .shipmentId(shipmentId)
+                .user(user)
+                .product(product)
+                .quantity(qty)
+                .totalPrice(product.getCost() * qty)
+                .status(OrderStatus.READY)
+                .build();
+
+        newOrders.add(order);
+    }
+
+    // 새로 만든 것만 저장
+    if (!newOrders.isEmpty()) {
+        List<Order> saved = orderRepository.saveAll(newOrders);
+        saved.forEach(o -> result.add(OrderResponse.from(o)));
+    }
+
+    return new CreateOrderResponse(shipmentId, result);
+
+}
 
     //    주문 조회
     @Transactional(readOnly = true)
@@ -107,7 +149,7 @@ public UserOrdersResponse getOrdersByEmail(String email) {
             .orElseThrow(() -> new OrderException(OrderErrorCode.UNKNOWN_USER));
 
     List<UserOrderItemResponse> orders =
-            orderRepository.findAllByUserOrderByOrderDateDesc(user)
+            orderRepository.findAllByUserOrderByOrderDateAsc(user)
                     .stream()
                     .map(UserOrderItemResponse::from)
                     .toList();
