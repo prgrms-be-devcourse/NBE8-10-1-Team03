@@ -58,7 +58,7 @@ public class UserController {
 
     // 아이디로 찾기
     @GetMapping("/{userid}")
-    public ResponseEntity<Response<UserInfoRes>> getUserbyId(@PathVariable Long userid){
+    public ResponseEntity<Response<UserInfoRes>> getUserById(@PathVariable Long userid){
         User user = userService.findById(userid);
 
         return  ResponseEntity.ok(CommonResponse.success(new UserInfoRes(user), "유저 아이디 조회 성공"));
@@ -66,7 +66,7 @@ public class UserController {
 
     // 이메일로 찾기
     @GetMapping("/email/{email}")
-    public ResponseEntity<Response<UserInfoRes>> getUserbyEmail(@PathVariable String email){
+    public ResponseEntity<Response<UserInfoRes>> getUserByEmail(@PathVariable String email){
         User user = userService.findByEmail(email);
 
         return  ResponseEntity.ok(CommonResponse.success(new UserInfoRes(user), "유저 이메일 조회 성공"));
