@@ -42,12 +42,7 @@ public class OrderController {
         return ResponseEntity.ok(CommonResponse.success(res, "주문 목록 조회를 성공하였습니다."));
     }
 
-//    전체 조회
-    @GetMapping
-    public ResponseEntity<Response<List<OrderResponse>>> getAllOrders() {
-        List<OrderResponse> res = orderService.getAllOrders();
-        return ResponseEntity.ok(CommonResponse.success(res, "주문 목록 조회를 성공하였습니다."));
-    }
+
     
 //    주문 삭제
     @DeleteMapping("/{orderId}")

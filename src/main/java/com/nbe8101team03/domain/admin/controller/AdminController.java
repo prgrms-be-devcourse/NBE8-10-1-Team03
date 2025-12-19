@@ -22,11 +22,7 @@ public class AdminController {
     }
 
     //    어드민 생성
-    @PostMapping
-    public ResponseEntity<CommonResponse<AdminResponse>> create(@RequestBody @Valid AdminRequest request) {
-        AdminResponse res = adminService.create(request);
-        return ResponseEntity.ok(CommonResponse.success(res, "어드민 생성 성공"));
-    }
+
 
     //    어드민 list 조회
     @GetMapping

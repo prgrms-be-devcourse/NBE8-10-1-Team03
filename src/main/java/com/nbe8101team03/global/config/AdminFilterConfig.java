@@ -14,7 +14,7 @@ public class AdminFilterConfig {
         FilterRegistrationBean<AdminJwtAuthFilter> reg = new FilterRegistrationBean<>();
         reg.setFilter(new AdminJwtAuthFilter(jwtUtil));
 
-        reg.addUrlPatterns("/admins", "/admins/*");
+        reg.addUrlPatterns("/admins", "/admins/*", "/admin/*", "/admin");
 
         reg.setOrder(1);
         return reg;

@@ -25,10 +25,16 @@ public class AdminJwtAuthFilter extends OncePerRequestFilter {
         this.jwtUtil = jwtUtil;
     }
 
+
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request){
-        String uri = request.getRequestURI();
-        return uri.equals("/admins/auth/login");
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) return true;
+
+        String path = request.getRequestURI();
+
+        if (path.equals("/login") || path.equals("/admin/login")) return true;
+
+        return !path.startsWith("/admin");
     }
 
     @Override
@@ -37,7 +43,12 @@ public class AdminJwtAuthFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            response.setStatus(HttpServletResponse.SC_OK);
+            return;
+        }
         try {
+
             String token = resolveBearerToken(request);
             if (token == null) {
                 throw new JwtException(JwtErrorCode.JWT_MISSING,
