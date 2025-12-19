@@ -1,6 +1,7 @@
 package com.nbe8101team03.domain.orders.controller;
 
 import com.nbe8101team03.domain.orders.dto.CreateOrderRequest;
+import com.nbe8101team03.domain.orders.dto.CreateOrderResponse;
 import com.nbe8101team03.domain.orders.dto.OrderResponse;
 import com.nbe8101team03.domain.orders.dto.UserOrdersResponse;
 import com.nbe8101team03.domain.orders.service.OrderService;
@@ -19,14 +20,9 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping("/create")
-    public ResponseEntity<Response<OrderResponse>> createOrder(@RequestBody CreateOrderRequest req) {
-        OrderResponse res = orderService.createOrder(
-                req.email() ,
-                req.address() ,
-                req.zipcode(),
-                req.productId(),
-                req.quantity()
-        );
+    public ResponseEntity<Response<CreateOrderResponse>> createOrder(@RequestBody CreateOrderRequest req) {
+
+        CreateOrderResponse res = orderService.createOrder(req);
 
         return ResponseEntity.status(201)
                 .body(CommonResponse.success(res, "주문 생성을 성공하였습니다."));
