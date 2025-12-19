@@ -3,7 +3,6 @@ package com.nbe8101team03.domain.orders.scheduler;
 import com.nbe8101team03.domain.orders.entity.Order;
 import com.nbe8101team03.domain.orders.entity.OrderStatus;
 import com.nbe8101team03.domain.orders.repository.OrderRepository;
-import com.nbe8101team03.domain.user.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;

@@ -99,7 +99,11 @@ public class ProductService {
         Product product = productOpt.get();
         if(product.getImageId() != null) productImageRepository.deleteById(product.getImageId());
 
-        productRepository.deleteById(productId);
+        try {
+            productRepository.deleteById(productId);
+        } catch (Exception e) {
+            product.turnActive(false);
+        }
     }
 
     /**
@@ -111,7 +115,7 @@ public class ProductService {
     public List<ProductInfoRes> getProducts() {
         List<Product> lists = productRepository.findAll();
 
-        return lists.stream().map(this::toRes).toList();
+        return lists.stream().filter(Product::isActive).map(this::toRes).toList();
     }
 
     /**
@@ -187,6 +191,8 @@ public class ProductService {
     }
 
     private ProductDetailInfoRes toDetailRes(Product product) {
+
+        Long adminId = (product.getAdmin() == null) ? null : product.getAdmin().getId();
         return ProductDetailInfoRes.builder()
                 .id(product.getId())
                 .name(product.getName())
@@ -196,7 +202,7 @@ public class ProductService {
                 .imageId(product.getImageId())
                 .createdAt(product.getCreatedAt())
                 .updatedAt(product.getUpdatedAt())
-                .adminId(product.getAdmin().getId())
+                .adminId(adminId)
                 .build();
     }
 

@@ -1,5 +1,9 @@
 package com.nbe8101team03.domain.orders.service;
 
+import com.nbe8101team03.domain.orders.dto.CreateOrderRequest;
+import com.nbe8101team03.domain.orders.dto.OrderResponse;
+import com.nbe8101team03.domain.orders.dto.UserOrderItemResponse;
+import com.nbe8101team03.domain.orders.dto.UserOrdersResponse;
 import com.nbe8101team03.domain.orders.dto.*;
 import com.nbe8101team03.domain.orders.entity.Order;
 import com.nbe8101team03.domain.orders.entity.OrderStatus;
@@ -20,10 +24,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class OrderService {
 
     private final OrderRepository orderRepository;
@@ -181,13 +185,7 @@ public UserOrdersResponse getOrdersByEmail(String email) {
             throw new OrderException(OrderErrorCode.ALREADY_CANCELED);
         }
 
-        User user = order.getUser();
-
         orderRepository.delete(order);
-
-        if (!orderRepository.existsByUser(user)) {
-            userRepository.delete(user);
-        }
 
 
 

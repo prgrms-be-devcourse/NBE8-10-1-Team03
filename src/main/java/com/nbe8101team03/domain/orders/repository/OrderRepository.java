@@ -12,11 +12,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
@@ -24,17 +21,11 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     boolean existsByUser(User user);
 
     List<Order> findAllByUserOrderByOrderDateDesc(User user);
-    List<Order> findAllByOrderDateBefore(LocalDateTime date);
 
     @Query("SELECT o.user.userId FROM Order o")
     Set<Long> findAllOrderedUserId();
     // 오더에 속한 유저 아이디를 set으로 전부 가져옴
     List<Order> findAllByUserOrderByOrderDateAsc(User user);
-
-    List<Order> findAllByStatusAndOrderDateBefore(
-            OrderStatus status,
-            LocalDateTime dateTime
-    );
 
 
     Optional<Order> findFirstByUserAndStatusAndOrderDateBetween(
@@ -47,13 +38,13 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     List<Order> findAllByStatus(OrderStatus status);
 
-//    기존주문에 수량 추가하기
-  Optional<Order> findByUserAndProductAndShipmentIdAndStatus(
+    //    기존주문에 수량 추가하기
+    Optional<Order> findByUserAndProductAndShipmentIdAndStatus(
         User user,
         Product product,
         Long shipmentId,
         OrderStatus status
-);
+    );
 
 // 삭제 스케쥴러
     @Modifying(clearAutomatically = true, flushAutomatically = true)

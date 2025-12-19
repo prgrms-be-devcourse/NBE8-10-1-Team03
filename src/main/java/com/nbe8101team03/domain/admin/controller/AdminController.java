@@ -1,9 +1,7 @@
 package com.nbe8101team03.domain.admin.controller;
 
 import com.nbe8101team03.domain.admin.dto.AdminPasswordChangeRequest;
-import com.nbe8101team03.domain.admin.dto.AdminRequest;
 import com.nbe8101team03.domain.admin.dto.AdminResponse;
-import com.nbe8101team03.domain.admin.dto.AdminUpdateRequest;
 import com.nbe8101team03.domain.admin.service.AdminService;
 import com.nbe8101team03.global.response.CommonResponse;
 import jakarta.validation.Valid;
@@ -22,11 +20,7 @@ public class AdminController {
     }
 
     //    어드민 생성
-    @PostMapping
-    public ResponseEntity<CommonResponse<AdminResponse>> create(@RequestBody @Valid AdminRequest request) {
-        AdminResponse res = adminService.create(request);
-        return ResponseEntity.ok(CommonResponse.success(res, "어드민 생성 성공"));
-    }
+
 
     //    어드민 list 조회
     @GetMapping
@@ -58,15 +52,17 @@ public class AdminController {
         return ResponseEntity.ok(CommonResponse.success(null, "어드민 활성화 성공"));
     }
 
+//    not used
+//    여기선 userId, password를 제외하고 다른 정보를 수정하는 방법이 좋을 것 같음
     // 어드민 userId 수정 (일반 정보 수정)
-    @PutMapping("/{adminId}")
-    public ResponseEntity<CommonResponse<AdminResponse>> update(
-            @PathVariable Long adminId,
-            @RequestBody @Valid AdminUpdateRequest request
-    ) {
-        AdminResponse res = adminService.update(adminId, request);
-        return ResponseEntity.ok(CommonResponse.success(res, "어드민 정보 수정 성공"));
-    }
+//    @PutMapping("/{adminId}")
+//    public ResponseEntity<CommonResponse<AdminResponse>> update(
+//            @PathVariable Long adminId,
+//            @RequestBody @Valid AdminUpdateRequest request
+//    ) {
+//        AdminResponse res = adminService.update(adminId, request);
+//        return ResponseEntity.ok(CommonResponse.success(res, "어드민 정보 수정 성공"));
+//    }
 
     // 어드민 비밀번호 변경
     @PatchMapping("/{adminId}/password")

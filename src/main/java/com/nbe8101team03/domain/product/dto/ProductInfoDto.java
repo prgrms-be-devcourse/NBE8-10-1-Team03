@@ -6,6 +6,6 @@ public record ProductInfoDto(
         String type,
         Integer cost,
         String description,
-        Long imageId
+        String imageId
 ) {
 }

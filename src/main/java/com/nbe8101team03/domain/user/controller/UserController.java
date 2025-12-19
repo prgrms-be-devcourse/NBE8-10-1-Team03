@@ -12,7 +12,7 @@ import com.nbe8101team03.global.response.CommonResponse;
 import com.nbe8101team03.global.response.Response;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +22,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+
+    @GetMapping("/check")
+    public ResponseEntity<Response<Boolean>> isExistEmail(@RequestParam String email) {
+        Boolean res = userService.isExistUser(email);
+        return ResponseEntity.ok(CommonResponse.success(res));
+    }
+
+//    POST/users : 유저 생성
+//    GET/users : 유저 전체 조회
+//    GET/users /{userId} : 유저 단건 조회
+//    PUT/users /{userId} : 유저 수정
+//    DELETE/users/{userId} : 유저 삭제
 
 
     // 유저의 아이디, 이메일, 주소, 우편번호, 총소비금액을 출력하는 API
@@ -57,7 +69,7 @@ public class UserController {
 
     // 아이디로 찾기
     @GetMapping("/{userid}")
-    public ResponseEntity<Response<UserInfoRes>> getUserbyId(@PathVariable Long userid){
+    public ResponseEntity<Response<UserInfoRes>> getUserById(@PathVariable Long userid){
         User user = userService.findById(userid);
 
         return  ResponseEntity.ok(CommonResponse.success(new UserInfoRes(user), "유저 아이디 조회 성공"));
@@ -65,7 +77,7 @@ public class UserController {
 
     // 이메일로 찾기
     @GetMapping("/email/{email}")
-    public ResponseEntity<Response<UserInfoRes>> getUserbyEmail(@PathVariable String email){
+    public ResponseEntity<Response<UserInfoRes>> getUserByEmail(@PathVariable String email){
         User user = userService.findByEmail(email);
 
         return  ResponseEntity.ok(CommonResponse.success(new UserInfoRes(user), "유저 이메일 조회 성공"));

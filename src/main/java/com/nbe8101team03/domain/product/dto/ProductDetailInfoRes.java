@@ -11,7 +11,7 @@ public record ProductDetailInfoRes (
         String type,
         Integer cost,
         String description,
-        Long imageId,
+        String imageId,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
         Long adminId
