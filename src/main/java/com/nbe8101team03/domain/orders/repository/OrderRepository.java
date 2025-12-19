@@ -18,6 +18,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findAllByOrderDateBefore(LocalDateTime date);
 
     @Query("SELECT o.user.userId FROM Order o")
-    Set<Long> findAll_ordered_userId();
+    Set<Long> findAllOrderedUserId();
     // 오더에 속한 유저 아이디를 set으로 전부 가져옴
 }

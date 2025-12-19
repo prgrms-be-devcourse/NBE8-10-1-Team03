@@ -29,7 +29,7 @@ public class UserScheduler {
         // 매일 새벽 3시에 실행, 오더가 없는 고아 유저만 골라서 하드 딜리트
 
         List<User> userList = userRepository.findAll(); // 모든 유저 리스트로 가져옴
-        Set<Long> orderedUserSet = orderRepository.findAll_ordered_userId();
+        Set<Long> orderedUserSet = orderRepository.findAllOrderedUserId();
         // 오더에 속한 모든 유저 아이디를 set으로 가져옴
 
 
