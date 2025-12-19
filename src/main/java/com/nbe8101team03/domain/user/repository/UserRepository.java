@@ -13,8 +13,4 @@ import java.util.Set;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
 
-    @Query("SELECT o.user.user_id FROM Order o")
-    Set<Long> findAll_ordered_userid();
-    // 오더에 속한 유저 아이디를 set으로 전부 가져옴
-
 }
