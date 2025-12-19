@@ -20,6 +20,13 @@ public class AdminAuthController {
         this.adminAuthService = adminAuthService;
     }
 
+//    not used
+//    @PostMapping("/login")
+//    public ResponseEntity<CommonResponse<AdminLoginRequest>> login(@RequestBody @Valid AdminLoginRequest request){
+//        AdminLoginResponse res = adminAuthService.login(request);
+//        return ResponseEntity.ok(CommonResponse.success(res, "로그인 성공"));
+//    }
+
     @PostMapping("/login")
     public ResponseEntity<CommonResponse<String>> login(@RequestBody @Valid AdminLoginRequest request){
         AdminLoginResponse res = adminAuthService.login(request);
