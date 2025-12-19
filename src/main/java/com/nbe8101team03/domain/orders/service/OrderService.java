@@ -121,13 +121,7 @@ public UserOrdersResponse getOrdersByEmail(String email) {
             throw new OrderException(OrderErrorCode.ALREADY_CANCELED);
         }
 
-        User user = order.getUser();
-
         orderRepository.delete(order);
-
-        if (orderRepository.existsByUser(user)) {
-            userRepository.delete(user);
-        }
 
 
 
