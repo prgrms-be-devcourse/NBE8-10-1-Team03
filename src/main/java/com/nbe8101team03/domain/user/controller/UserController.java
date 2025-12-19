@@ -1,7 +1,11 @@
+// 실제론 getUserTotalInfo 정도만 사용될? 컨트롤러
+
+
 package com.nbe8101team03.domain.user.controller;
 
 import com.nbe8101team03.domain.user.dto.UserInfoDto;
 import com.nbe8101team03.domain.user.dto.UserInfoRes;
+import com.nbe8101team03.domain.user.dto.UserTotalRes;
 import com.nbe8101team03.domain.user.entity.User;
 import com.nbe8101team03.domain.user.service.UserService;
 import com.nbe8101team03.global.response.CommonResponse;
@@ -18,6 +22,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+
+
+    // 유저의 아이디, 이메일, 주소, 우편번호, 총소비금액을 출력하는 API
+    @GetMapping("/total")
+    public ResponseEntity<Response<UserTotalRes>> getUserTotalInfo(@RequestParam String email){
+        UserTotalRes res = userService.totalinfo(email);
+
+        return  ResponseEntity.ok(CommonResponse.success(res, "유저 총 소비금액 조회 성공"));
+    }
 
 
     @PostMapping

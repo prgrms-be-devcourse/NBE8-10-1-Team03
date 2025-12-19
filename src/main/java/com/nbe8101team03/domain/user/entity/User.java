@@ -15,7 +15,7 @@ import lombok.Setter;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long user_id;
+    private Long userId;
     @Column(unique = true, nullable = false)
     private String email;
     @Column(nullable = false)
@@ -24,6 +24,7 @@ public class User {
     // 우편번호
     @Column(nullable = false)
     private int zipcode;
+
 
     // 빌더 사용하는 방향으로 수정
     @Builder
@@ -38,4 +39,5 @@ public class User {
         this.address = address;
         this.zipcode = zipcode;
     }
+
 }
