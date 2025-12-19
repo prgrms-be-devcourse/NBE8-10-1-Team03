@@ -2,6 +2,8 @@ package com.nbe8101team03.domain.admin.controller;
 
 import com.nbe8101team03.domain.admin.dto.AdminLoginRequest;
 import com.nbe8101team03.domain.admin.dto.AdminLoginResponse;
+import com.nbe8101team03.domain.admin.dto.AdminRequest;
+import com.nbe8101team03.domain.admin.dto.AdminResponse;
 import com.nbe8101team03.domain.admin.service.AdminAuthService;
 import com.nbe8101team03.global.response.CommonResponse;
 import jakarta.validation.Valid;
@@ -12,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/admin/auth")
+@RequestMapping("/admins/auth")
 public class AdminAuthController {
     private final AdminAuthService adminAuthService;
 

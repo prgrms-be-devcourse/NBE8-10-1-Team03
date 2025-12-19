@@ -25,13 +25,19 @@ public class AdminJwtAuthFilter extends OncePerRequestFilter {
         this.jwtUtil = jwtUtil;
     }
 
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request){
+        String uri = request.getRequestURI();
+        return uri.equals("/admins/auth/login");
+    }
+
+    @Override
     protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
         try {
-
             String token = resolveBearerToken(request);
             if (token == null) {
                 throw new JwtException(JwtErrorCode.JWT_MISSING,
@@ -59,8 +65,8 @@ public class AdminJwtAuthFilter extends OncePerRequestFilter {
 
             if (!"ADMIN".equals(role)) {
                 throw new JwtException(JwtErrorCode.JWT_FORBIDDEN,
-                        "JWT_INVALID",
-                        "jwt token is invalid"
+                        "JWT_FORBIDDEN",
+                        "admin role required"
                 );
             }
 
